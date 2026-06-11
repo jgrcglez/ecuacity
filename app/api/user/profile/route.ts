@@ -21,15 +21,13 @@ export async function PATCH(request: NextRequest) {
 
     if (Object.keys(payload).length > 0) {
       try {
-        const updated = await auth.api.updateUser({
+        await auth.api.updateUser({
           body: payload,
           headers: request.headers,
         });
-        // Return updated fields so client can sync without full reload
-        if (updated?.user) {
-          if (updated.user.name) result.name = updated.user.name;
-          if (updated.user.image !== undefined) result.image = updated.user.image ?? null;
-        }
+        // Client uses updateUser() from auth-client.ts + refetch() to sync
+        if (name?.trim()) result.name = name.trim();
+        if (image !== undefined) result.image = image || null;
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : "Error al actualizar";
         return NextResponse.json({ error: msg }, { status: 400 });
