@@ -60,6 +60,7 @@ next-env.d.ts
 
 # Source documents and extraction tools (business secret + one-time utilities)
 /scripts/
+!/lib/db/migrate/
 
 # One-time seed utilities — keep only the 3 official pipeline files
 /lib/db/seed/*

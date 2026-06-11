@@ -30,6 +30,7 @@ export default function SignUp() {
         name,
         email,
         password,
+        callbackURL: "/students/dashboard",
       });
 
       if (result.error) {

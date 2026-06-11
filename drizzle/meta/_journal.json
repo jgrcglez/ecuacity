@@ -36,6 +36,13 @@
       "when": 1781032791252,
       "tag": "0004_white_wendigo",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1781215172563,
+      "tag": "0005_mushy_thing",
+      "breakpoints": true
     }
   ]
 }

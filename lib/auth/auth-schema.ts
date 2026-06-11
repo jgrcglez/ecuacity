@@ -11,6 +11,8 @@ export const user = pgTable("user", {
   banned: boolean("banned").default(false),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
+  verificationEmailSentAt: timestamp("verification_email_sent_at"),
+  resetPasswordSentAt: timestamp("reset_password_sent_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
