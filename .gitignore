@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +40,29 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+/.claude/settings.local.json
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/.gitignore
+/.idea/dataSources.xml
+/.idea/ecuacity.iml
+/.idea/modules.xml
+/.idea/vcs.xml
+
+# dev: auto-generated UI-to-seed snapshot
+/lib/db/seed/seed-data.json
+
+# PostgreSQL binary data (Docker volume)
+/database-docker/postgresql-data/
+
+# per-user Claude Code session + memory
+/.claude/
+/question-bank-reference/
+
+# Source documents and extraction tools (business secret + one-time utilities)
+/scripts/
+
+# One-time seed utilities — keep only the 3 official pipeline files
+/lib/db/seed/*
+!/lib/db/seed/questions.ts
+!/lib/db/seed/export-questions.ts
+!/lib/db/seed/parse-gemini-export.ts
