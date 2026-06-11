@@ -1,10 +1,10 @@
 /**
  * Run pending Drizzle migrations on Supabase.
  *
- * Usage: npx tsx scripts/migrate-supabase.ts
+ * Usage: npm run db:migrate:supabase
  *
- * Reads DATABASE_URL from .env.supabase, then applies all migration
- * SQL files from drizzle/ that haven't been applied yet.
+ * Reads DATABASE_URL from .env.supabase (project root, gitignored),
+ * then applies all migration SQL files from drizzle/.
  */
 import { readFileSync, existsSync } from "fs";
 import { readdirSync } from "fs";
@@ -12,7 +12,8 @@ import { resolve } from "path";
 import { parse } from "dotenv";
 import { Client } from "pg";
 
-const SUPABASE_ENV = resolve(__dirname, "../.env.supabase");
+const ROOT = resolve(__dirname, "..", "..", "..");
+const SUPABASE_ENV = resolve(ROOT, ".env.supabase");
 
 async function main() {
   // Load Supabase credentials
@@ -30,7 +31,7 @@ async function main() {
   }
 
   // Find all migration SQL files sorted by name
-  const drizzleDir = resolve(__dirname, "../drizzle");
+  const drizzleDir = resolve(ROOT, "drizzle");
   const files = readdirSync(drizzleDir)
     .filter((f) => f.endsWith(".sql"))
     .sort();
