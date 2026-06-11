@@ -13,7 +13,8 @@
     "db:studio": "drizzle-kit studio",
     "db:seed:questions": "tsx lib/db/seed/questions.ts",
     "db:seed:export": "tsx lib/db/seed/export-questions.ts",
-    "db:seed:parse-gemini": "tsx lib/db/seed/parse-gemini-export.ts"
+    "db:seed:parse-gemini": "tsx lib/db/seed/parse-gemini-export.ts",
+    "db:migrate:supabase": "tsx lib/db/migrate/migrate-supabase.ts"
   },
   "dependencies": {
     "better-auth": "^1.6.9",
