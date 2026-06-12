@@ -36,7 +36,7 @@ export default function StudentsLayout({ children }: { children: React.ReactNode
 
   const initials = user?.name
     ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
-    : "??";
+    : "EC";
 
   const handleSignOut = async () => {
     await signOut();
