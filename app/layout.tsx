@@ -32,6 +32,7 @@ export default function RootLayout({
             data-scroll-behavior="smooth"
         >
         <body className={`${geistSans.className} min-h-full flex flex-col antialiased`}>
+        <link rel="preload" href="/landing/quito.jpg" as="image" fetchPriority="high" />
         <TooltipProvider>
         <SessionGuard>
         {children}
