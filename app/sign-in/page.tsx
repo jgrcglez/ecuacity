@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GraduationCap, Loader2, LogIn, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
 export default function SignIn() {
@@ -24,7 +23,6 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [cooldown, setCooldown] = useState(0);
-  const router = useRouter();
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -114,7 +112,7 @@ export default function SignIn() {
         else setError(msg || "Error al verificar");
       } else {
         setSuccess(true);
-        setTimeout(() => router.push("/students/dashboard"), 500);
+        setTimeout(() => window.location.href = "/students/dashboard", 500);
       }
     } catch {
       setError("Error de conexión");
