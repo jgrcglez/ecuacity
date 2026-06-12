@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/lib/auth/auth-client";
 import { Separator } from "@/components/ui/separator";
@@ -95,50 +94,41 @@ function DesktopSidebar() {
   );
 }
 
-// ── Mobile hamburger + drawer ──
+// ── Mobile hamburger + drawer — CSS-only toggle ──
 function MobileSidebar() {
-  const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
-
   return (
     <div className="md:hidden">
-      {/* Hamburger button */}
-      <button
-        onClick={() => setOpen(true)}
-        className="fixed top-3 right-3 z-40 size-9 rounded-lg bg-card shadow-sm border border-border flex items-center justify-center"
-        aria-label="Abrir menú"
-      >
+      {/* Hidden checkbox */}
+      <input type="checkbox" id="dashboard-menu-toggle" className="peer hidden" />
+
+      {/* Hamburger label */}
+      <label htmlFor="dashboard-menu-toggle" className="fixed top-3 right-3 z-40 size-9 rounded-lg bg-card shadow-sm border border-border flex items-center justify-center cursor-pointer" aria-label="Abrir menú">
         <Menu className="size-4 text-foreground" />
-      </button>
+      </label>
 
-      {/* Drawer overlay + panel */}
-      {open && (
-        <>
-          {/* Backdrop */}
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={close} />
+      {/* Drawer */}
+      <div className="fixed inset-0 z-50 pointer-events-none">
+        {/* Backdrop */}
+        <label htmlFor="dashboard-menu-toggle" className="block fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none peer-checked:pointer-events-auto cursor-pointer" />
 
-          {/* Panel — explicit viewport height */}
-          <div className="fixed top-0 right-0 w-64 z-50 flex flex-col bg-flag-blue text-white shadow-2xl border-l border-white/10" style={{ height: "100dvh" }}>
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 h-14 shrink-0 border-b border-white/10">
-              <span className="text-lg font-bold">Ecuacity</span>
-              <button onClick={close} className="p-1.5 text-white/60 hover:text-white rounded-lg hover:bg-white/10">
-                <X className="size-4" />
-              </button>
-            </div>
-
-            {/* Scrollable nav */}
-            <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-              <NavLinks onNavClick={close} />
-            </div>
-
-            {/* Sign out */}
-            <div className="shrink-0 px-3 py-4 border-t border-white/10">
-              <SignOutBtn />
-            </div>
+        {/* Panel */}
+        <div className="fixed top-0 right-0 w-64 flex flex-col bg-flag-blue text-white shadow-2xl border-l border-white/10 translate-x-full peer-checked:translate-x-0 transition-transform duration-300 pointer-events-auto" style={{ height: "100dvh" }}>
+          <div className="flex items-center justify-between px-5 h-14 shrink-0 border-b border-white/10">
+            <span className="text-lg font-bold">Ecuacity</span>
+            <label htmlFor="dashboard-menu-toggle" className="p-1.5 text-white/60 hover:text-white rounded-lg hover:bg-white/10 cursor-pointer">
+              <X className="size-4" />
+            </label>
           </div>
-        </>
-      )}
+
+          <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+            <NavLinks />
+          </div>
+
+          <div className="shrink-0 px-3 py-4 border-t border-white/10">
+            <SignOutBtn />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
