@@ -22,6 +22,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -84,7 +91,7 @@ function DesktopAuth() {
   );
 }
 
-function MobileDrawerContent() {
+function MobileDrawerContent({ onNavClick }: { onNavClick?: () => void }) {
   const { data: session } = useSession();
   const user = session?.user;
   const pathname = usePathname();
@@ -99,13 +106,22 @@ function MobileDrawerContent() {
   };
 
   return (
-    <>
+    <div className="flex h-full flex-col">
+      {/* Brand header */}
+      <div className="flex items-center justify-between px-5 h-16 border-b border-white/10 shrink-0">
+        <span className="text-lg font-bold text-white">Menú</span>
+        <button onClick={onNavClick} className="p-1.5 text-white/60 hover:text-white rounded-lg hover:bg-white/10">
+          <X className="size-5" />
+        </button>
+      </div>
+
       {/* Nav links */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {NAV_LINKS.map((link) => (
           <Link
             key={link.href}
             href={link.href}
+            onClick={onNavClick}
             className={cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
               pathname === link.href
@@ -118,12 +134,12 @@ function MobileDrawerContent() {
         ))}
       </nav>
 
-      {/* Auth section */}
+      {/* Auth */}
       <div className="border-t border-white/10 px-4 py-4 shrink-0 space-y-3">
         {user ? (
           <>
             <div className="flex items-center gap-3">
-              <Avatar className="size-9 ring-2 ring-white/20 shrink-0">
+              <Avatar className="size-9 shrink-0 ring-2 ring-white/20">
                 {user?.image && <AvatarImage src={user.image} alt={user.name ?? ""} />}
                 <AvatarFallback className="bg-flag-yellow text-flag-blue text-xs font-bold">{initials}</AvatarFallback>
               </Avatar>
@@ -132,33 +148,34 @@ function MobileDrawerContent() {
                 <p className="text-xs text-white/50 truncate">{user.email}</p>
               </div>
             </div>
-            <Link href={user.role === "admin" ? "/dashboard" : "/students"}>
-              <Button size="sm" className="w-full bg-white/10 text-white hover:bg-white/20" asChild>
-                <span><User className="size-3.5 mr-1.5" />{user.role === "admin" ? "Dashboard" : "Mi cuenta"}</span>
-              </Button>
-            </Link>
-            <Button size="sm" variant="ghost" className="w-full text-white/60 hover:text-white hover:bg-white/10 justify-start" onClick={handleSignOut}>
+            <Button size="sm" className="w-full bg-white/10 text-white hover:bg-white/20" asChild>
+              <Link href={user.role === "admin" ? "/dashboard" : "/students"} onClick={onNavClick}>
+                <User className="size-3.5 mr-1.5" />{user.role === "admin" ? "Dashboard" : "Mi cuenta"}
+              </Link>
+            </Button>
+            <Button size="sm" variant="ghost" className="w-full text-red-400 hover:text-red-300 justify-start" onClick={handleSignOut}>
               <LogOut className="size-3.5 mr-1.5" />Cerrar sesión
             </Button>
           </>
         ) : (
           <div className="flex gap-2">
-            <Button variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" asChild>
+            <Button variant="outline" className="flex-1 border-white/20 text-white hover:bg-white/10" onClick={onNavClick} asChild>
               <Link href="/sign-in">Iniciar sesión</Link>
             </Button>
-            <Button className="flex-1 bg-flag-yellow text-flag-blue hover:bg-flag-blue hover:text-white font-semibold" asChild>
+            <Button className="flex-1 bg-flag-yellow text-flag-blue hover:bg-flag-blue hover:text-white font-semibold" onClick={onNavClick} asChild>
               <Link href="/sign-up">Registrarse</Link>
             </Button>
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
 export default function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -169,9 +186,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Hidden checkbox — the CSS-only toggle */}
-      <input type="checkbox" id="nav-menu-toggle" className="peer hidden" />
-
       <header
         className={cn(
           "fixed top-0 inset-x-0 z-40 transition-all duration-300",
@@ -210,10 +224,19 @@ export default function Navbar() {
 
             {/* Desktop auth + mobile hamburger */}
             <div className="flex items-center gap-3">
-              {/* Hamburger label — toggles the checkbox */}
-              <label htmlFor="nav-menu-toggle" className="lg:hidden p-2 text-white/80 hover:text-white cursor-pointer" aria-label="Abrir menú">
-                <Menu className="size-5" />
-              </label>
+              {/* Mobile hamburger — shadcn Sheet */}
+              <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="lg:hidden text-white hover:bg-white/10" aria-label="Abrir menú">
+                    <Menu className="size-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-72 p-0 bg-flag-blue text-white border-l border-white/10" showCloseButton={false}>
+                  <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
+                  <SheetDescription className="sr-only">Navegación móvil de Ecuacity</SheetDescription>
+                  <MobileDrawerContent onNavClick={() => setMenuOpen(false)} />
+                </SheetContent>
+              </Sheet>
 
               {/* Desktop auth */}
               <div className="hidden lg:flex items-center gap-3">
@@ -223,27 +246,6 @@ export default function Navbar() {
           </div>
         </div>
       </header>
-
-      {/* Mobile drawer — CSS-only via peer-checked */}
-      <div className="fixed inset-0 z-50 pointer-events-none lg:hidden">
-        {/* Backdrop — clicking closes the menu */}
-        <label htmlFor="nav-menu-toggle" className="block fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none peer-checked:pointer-events-auto cursor-pointer" />
-
-        {/* Panel */}
-        <div className="fixed top-0 right-0 w-72 bg-flag-blue flex flex-col shadow-2xl border-l border-white/10 overflow-hidden translate-x-full peer-checked:translate-x-0 transition-transform duration-300 pointer-events-auto" style={{ height: "100dvh" }}>
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 h-16 border-b border-white/10 shrink-0">
-            <span className="text-lg font-bold text-white">Menú</span>
-            {/* Close label */}
-            <label htmlFor="nav-menu-toggle" className="p-1.5 text-white/60 hover:text-white rounded-lg hover:bg-white/10 cursor-pointer">
-              <X className="size-5" />
-            </label>
-          </div>
-
-          {/* Content — session-dependent, hydrates separately */}
-          <MobileDrawerContent />
-        </div>
-      </div>
     </>
   );
 }
