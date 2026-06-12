@@ -24,7 +24,7 @@ export default function DashboardPage() {
       fetch("/api/user/progress", { cache: "no-store" }).then((r) => r.json()),
       fetch("/api/user/activity?limit=10", { cache: "no-store" }).then((r) => r.json()),
     ]).then(([me, progress, act]) => {
-      setIsPremium(me.subscription?.plan === "premium");
+      setIsPremium(me.subscription?.isPremium ?? false);
       setStats(progress);
       setActivity(act.activity ?? []);
     }).catch(() => {}).finally(() => setLoading(false));
