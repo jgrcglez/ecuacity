@@ -1,31 +1,14 @@
 import {betterAuth} from "better-auth";
 import {drizzleAdapter} from "better-auth/adapters/drizzle";
 import {admin} from "better-auth/plugins";
+import {emailOTP} from "better-auth/plugins/email-otp";
 import {db} from "../db/drizzle";
 import {account, session, user as userTable, verification} from "./auth-schema";
 import {headers} from "next/headers";
 import {redirect} from "next/navigation";
 import {eq} from "drizzle-orm";
 import {sendEmail} from "../email";
-import {verificationEmail} from "../email/templates/verification";
-import {resetPasswordEmail} from "../email/templates/reset-password";
-
-const COOLDOWN_MS = 5 * 60 * 1000;
-
-async function updateCooldown(userId: string, field: "verificationEmailSentAt" | "resetPasswordSentAt") {
-    await db.update(userTable)
-        .set({[field]: new Date()})
-        .where(eq(userTable.id, userId));
-}
-
-async function isOnCooldown(user: {id: string}, field: "verificationEmailSentAt" | "resetPasswordSentAt"): Promise<boolean> {
-    const [record] = await db.select({sentAt: userTable[field]})
-        .from(userTable)
-        .where(eq(userTable.id, user.id))
-        .limit(1);
-    if (!record?.sentAt) return false;
-    return Date.now() - new Date(record.sentAt).getTime() < COOLDOWN_MS;
-}
+import {otpEmail} from "../email/templates/otp";
 
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
@@ -33,38 +16,44 @@ export const auth = betterAuth({
         schema: {user: userTable, session, account, verification},
     }),
     emailAndPassword: {
-        enabled: true,
-        requireEmailVerification: true,
-        sendResetPassword: async ({user, url}) => {
-            if (await isOnCooldown(user, "resetPasswordSentAt")) return;
-            try {
-                const {subject, html, text} = resetPasswordEmail({name: user.name, url});
-                await sendEmail({to: user.email, subject, html, text});
-                await updateCooldown(user.id, "resetPasswordSentAt");
-            } catch (e) {
-                console.error("Failed to send reset-password email:", e);
-            }
-        },
+        enabled: false,
     },
     emailVerification: {
         sendOnSignUp: true,
         autoSignInAfterVerification: true,
-        sendVerificationEmail: async ({user, url}) => {
-            if (await isOnCooldown(user, "verificationEmailSentAt")) return;
-            try {
-                const {subject, html, text} = verificationEmail({name: user.name, url});
-                await sendEmail({to: user.email, subject, html, text});
-                await updateCooldown(user.id, "verificationEmailSentAt");
-            } catch (e) {
-                console.error("Failed to send verification email:", e);
-            }
+        sendVerificationEmail: async () => {
+            // Handled by emailOTP plugin
         },
     },
     session: {
-        expiresIn: 60 * 60, // 1 hour of inactivity before session expires
-        updateAge: 15 * 60, // auto-refresh session every 15 min if active
+        expiresIn: 60 * 60 * 24 * 7, // 7 days of inactivity before session expires
+        updateAge: 30 * 60, // auto-refresh session every 30 min if active
     },
-    plugins: [admin()],
+    plugins: [
+        admin(),
+        emailOTP({
+            otpLength: 6,
+            expiresIn: 300, // 5 minutes
+            allowedAttempts: 3,
+            sendVerificationOnSignUp: true,
+            overrideDefaultEmailVerification: true,
+            rateLimit: {
+                window: 60, // 1 minute window
+                max: 3, // max 3 OTP requests per window
+            },
+            sendVerificationOTP: async ({email, otp, type}) => {
+                // Look up user name for a personalized email
+                const [record] = await db.select({name: userTable.name})
+                    .from(userTable)
+                    .where(eq(userTable.email, email.toLowerCase()))
+                    .limit(1);
+
+                const name = record?.name ?? email.split("@")[0];
+                const {subject, html, text} = otpEmail({name, otp, type});
+                await sendEmail({to: email, subject, html, text});
+            },
+        }),
+    ],
 });
 
 export async function getSession() {
