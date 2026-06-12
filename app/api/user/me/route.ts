@@ -31,6 +31,21 @@ export async function GET(request: NextRequest) {
     subData = created;
   }
 
+  // Compute premium status from expiresAt
+  const now = new Date();
+  const expiresAt = subData.expiresAt ? new Date(subData.expiresAt) : null;
+  const isPremium = subData.plan === "premium" && expiresAt !== null && expiresAt > now;
+
+  // If premium but expired, auto-revert to free
+  if (subData.plan === "premium" && expiresAt !== null && expiresAt <= now) {
+    await db
+      .update(subscription)
+      .set({ plan: "free", status: "expired" })
+      .where(eq(subscription.userId, user.id));
+    subData.plan = "free";
+    subData.status = "expired";
+  }
+
   return NextResponse.json({
     id: user.id,
     name: user.name,
@@ -40,6 +55,8 @@ export async function GET(request: NextRequest) {
     subscription: {
       plan: subData.plan,
       status: subData.status,
+      isPremium,
+      expiresAt: expiresAt?.toISOString() ?? null,
     },
   });
 }

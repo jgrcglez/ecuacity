@@ -100,7 +100,7 @@ export default function StudentsLayout({ children }: { children: React.ReactNode
   useEffect(() => {
     fetch("/api/user/me")
       .then((r) => r.json())
-      .then((d) => setIsPremium(d.subscription?.plan === "premium"))
+      .then((d) => setIsPremium(d.subscription?.isPremium ?? false))
       .catch(() => {});
   }, []);
 
