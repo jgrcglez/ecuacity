@@ -1,16 +1,11 @@
-"use client";
-
-import Link from "next/link";
-import { useSession } from "@/lib/auth/auth-client";
-import { ArrowRight, Play, Star } from "lucide-react";
+import { Star, Play, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { CtaLink } from "./cta-link";
 
 export default function Hero() {
-  const { data: session } = useSession();
-  const ctaHref = session?.user ? "/students" : "/sign-up";
-
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-flag-blue">
       {/* Background image — Quito */}
       <div
         aria-hidden="true"
@@ -42,7 +37,7 @@ export default function Hero() {
         className="absolute bottom-32 left-[5%] size-80 rounded-full bg-flag-yellow/10 blur-[120px]"
       />
 
-      <div className="relative container mx-auto px-4 pt-20 pb-16 text-center">
+      <div className="relative container mx-auto px-4 pt-32 pb-16 text-center">
         {/* Badge */}
         <div className="animate-fade-in-up inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium mb-8 border border-white/10">
           <Star className="size-3.5 text-flag-yellow fill-flag-yellow" />
@@ -63,31 +58,8 @@ export default function Hero() {
           recibe retroalimentación inmediata y llega preparado el día del examen.
         </p>
 
-        {/* CTAs */}
-        <div className="animate-fade-in-up animate-delay-300 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button
-            size="lg"
-            className="bg-flag-yellow text-flag-blue font-bold text-base px-8 h-12 shadow-xl shadow-flag-yellow/25 hover:bg-flag-blue hover:text-white transition-all duration-150"
-            asChild
-          >
-            <Link href={ctaHref}>
-              <Play className="size-4 mr-2 fill-flag-blue" />
-              Comenzar gratis
-            </Link>
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 font-semibold h-12 px-8"
-            asChild
-          >
-            <Link href={ctaHref}>
-              Ver preguntas de ejemplo
-              <ArrowRight className="size-4 ml-2" />
-            </Link>
-          </Button>
-        </div>
-
+        {/* CTAs — tiny client island, rest of hero is server-rendered */}
+        <CtaLink />
       </div>
     </section>
   );
