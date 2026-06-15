@@ -12,29 +12,50 @@ import { confirmPayment } from "@/lib/payphone";
  * 2. If approved, sets the user's subscription to premium with 30-day expiry
  * 3. Redirects the user to the dashboard
  */
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
-  const clientTxId = searchParams.get("clientTransactionId");
+/**
+ * Extract payment identifiers from URL search params or request body,
+ * trying the various parameter names Payphone might use.
+ */
+function extractPaymentParams(
+  searchParams: URLSearchParams,
+  body?: Record<string, unknown> | null,
+): { id: string | null; clientTxId: string | null } {
+  const get = (...keys: string[]) => {
+    for (const key of keys) {
+      const fromParams = searchParams.get(key);
+      if (fromParams) return fromParams;
+      if (body?.[key] !== undefined) return String(body[key]);
+    }
+    return null;
+  };
 
-  if (!id || !clientTxId) {
-    return NextResponse.redirect(new URL("/students/upgrade?error=missing_params", request.url));
-  }
+  return {
+    id: get("id", "paymentId", "transactionId", "PaymentId"),
+    clientTxId: get(
+      "clientTransactionId",
+      "clientTxId",
+      "ClientTransactionId",
+      "client_transaction_id",
+    ),
+  };
+}
 
+async function handleConfirm(
+  id: string,
+  clientTxId: string,
+  requestUrl: URL,
+): Promise<NextResponse> {
   try {
-    const result = await confirmPayment({
-      id: Number(id),
-      clientTxId,
-    });
+    const result = await confirmPayment({ id: Number(id), clientTxId });
 
     if (result.statusCode !== 3) {
-      return NextResponse.redirect(new URL("/students/upgrade?error=canceled", request.url));
+      return NextResponse.redirect(new URL("/students/upgrade?error=canceled", requestUrl));
     }
 
     // Extract userId from clientTransactionId (format: userId_timestamp)
     const userId = clientTxId.split("_")[0];
     if (!userId) {
-      return NextResponse.redirect(new URL("/students/upgrade?error=invalid_tx", request.url));
+      return NextResponse.redirect(new URL("/students/upgrade?error=invalid_tx", requestUrl));
     }
 
     const durationDays = Number(process.env.PREMIUM_DURATION_DAYS ?? 30);
@@ -60,9 +81,62 @@ export async function GET(request: NextRequest) {
         },
       });
 
-    return NextResponse.redirect(new URL(`/students/upgrade?success=true&days=${durationDays}`, request.url));
+    return NextResponse.redirect(
+      new URL(`/students/upgrade?success=true&days=${durationDays}`, requestUrl),
+    );
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Error al confirmar pago";
-    return NextResponse.redirect(new URL(`/students/upgrade?error=${encodeURIComponent(msg)}`, request.url));
+    return NextResponse.redirect(
+      new URL(`/students/upgrade?error=${encodeURIComponent(msg)}`, requestUrl),
+    );
   }
+}
+
+export async function GET(request: NextRequest) {
+  const requestUrl = new URL(request.url);
+  console.log("Payphone confirm GET — full URL:", requestUrl.toString());
+
+  const allParams: Record<string, string> = {};
+  requestUrl.searchParams.forEach((v, k) => { allParams[k] = v; });
+  console.log("Payphone confirm — GET params:", JSON.stringify(allParams));
+
+  const { id, clientTxId } = extractPaymentParams(requestUrl.searchParams);
+
+  if (!id || !clientTxId) {
+    console.error("Payphone confirm — missing GET params. id=", id, "clientTxId=", clientTxId);
+    return NextResponse.redirect(new URL("/students/upgrade?error=missing_params", request.url));
+  }
+
+  return handleConfirm(id, clientTxId, requestUrl);
+}
+
+export async function POST(request: NextRequest) {
+  console.log("Payphone confirm POST — called");
+
+  let body: Record<string, unknown> | null = null;
+  try {
+    body = await request.json();
+    console.log("Payphone confirm — POST body:", JSON.stringify(body));
+  } catch {
+    try {
+      const formData = await request.formData();
+      body = {};
+      formData.forEach((value, key) => { (body as Record<string, string>)[key] = String(value); });
+      console.log("Payphone confirm — POST formData:", JSON.stringify(body));
+    } catch {
+      console.log("Payphone confirm — POST body unreadable");
+    }
+  }
+
+  const requestUrl = new URL(request.url);
+
+  // For POST, parameters might be in the body or query string
+  const { id, clientTxId } = extractPaymentParams(requestUrl.searchParams, body);
+
+  if (!id || !clientTxId) {
+    console.error("Payphone confirm — missing POST params. body=", JSON.stringify(body));
+    return NextResponse.json({ error: "missing_params" }, { status: 400 });
+  }
+
+  return handleConfirm(id, clientTxId, requestUrl);
 }
