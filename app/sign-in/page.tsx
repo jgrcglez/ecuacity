@@ -112,7 +112,7 @@ export default function SignIn() {
         else setError(msg || "Error al verificar");
       } else {
         setSuccess(true);
-        setTimeout(() => window.location.href = "/students/dashboard", 500);
+        setTimeout(() => window.location.href = "/dashboard", 500);
       }
     } catch {
       setError("Error de conexión");

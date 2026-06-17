@@ -37,6 +37,11 @@ export default async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/students", request.url));
     }
 
+    // Admin users hitting student pages → redirect to dashboard
+    if (isUserPage && session?.user && session.user.role === "admin") {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+
     // Free users hitting premium pages → redirect to upgrade
     const isPremiumPage = PREMIUM_PAGES.some((page) => pathname.startsWith(page));
     if (isPremiumPage && session?.user && session.user.role !== "admin") {
