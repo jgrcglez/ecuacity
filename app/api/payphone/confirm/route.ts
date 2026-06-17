@@ -85,24 +85,32 @@ async function handleConfirm(
         },
       });
 
-    // Record the payment for auditing
-    const amount = result.amount;
-    const commission = Math.round(amount * PAYPHONE_COMMISSION_RATE);
-    const netAmount = amount - commission;
+    // Record the payment for auditing (skip if duplicate callback)
+    const [existing] = await db
+      .select({ id: payment.id })
+      .from(payment)
+      .where(eq(payment.transactionId, String(result.transactionId)))
+      .limit(1);
 
-    await db.insert(payment).values({
-      userId,
-      transactionId: String(result.transactionId),
-      clientTransactionId: clientTxId,
-      amount,
-      commission,
-      netAmount,
-      status: "approved",
-      reference: "Acceso Premium Ecuacity",
-      cardBrand: result.cardBrand,
-      cardType: result.cardType,
-      authorizationCode: result.authorizationCode,
-    });
+    if (!existing) {
+      const amount = result.amount;
+      const commission = Math.round(amount * PAYPHONE_COMMISSION_RATE);
+      const netAmount = amount - commission;
+
+      await db.insert(payment).values({
+        userId,
+        transactionId: String(result.transactionId),
+        clientTransactionId: clientTxId,
+        amount,
+        commission,
+        netAmount,
+        status: "approved",
+        reference: "Acceso Premium Ecuacity",
+        cardBrand: result.cardBrand,
+        cardType: result.cardType,
+        authorizationCode: result.authorizationCode,
+      });
+    }
 
     return NextResponse.redirect(
       new URL(`/students/upgrade?success=true&days=${durationDays}`, requestUrl),

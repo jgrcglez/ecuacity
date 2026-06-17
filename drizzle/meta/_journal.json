@@ -50,6 +50,13 @@
       "when": 1781708117119,
       "tag": "0006_faulty_blindfold",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1781711653164,
+      "tag": "0007_petite_madripoor",
+      "breakpoints": true
     }
   ]
 }
