@@ -21,7 +21,7 @@ export const payment = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
 
-    transactionId: text("transaction_id").notNull(),
+    transactionId: text("transaction_id").notNull().unique(),
     clientTransactionId: text("client_transaction_id").notNull(),
 
     amount: integer("amount").notNull(),                     // gross in cents
