@@ -43,6 +43,13 @@
       "when": 1781215172563,
       "tag": "0005_mushy_thing",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1781708117119,
+      "tag": "0006_faulty_blindfold",
+      "breakpoints": true
     }
   ]
 }

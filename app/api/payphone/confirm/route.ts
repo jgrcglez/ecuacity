@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/drizzle";
 import { subscription } from "@/lib/db/schema/subscription-schema";
+import { payment } from "@/lib/db/schema/payment-schema";
 import { eq } from "drizzle-orm";
 import { confirmPayment } from "@/lib/payphone";
+
+/** Payphone effective commission: 5% + 15% VAT on the fee = 5.75% */
+const PAYPHONE_COMMISSION_RATE = 0.0575;
 
 /**
  * Payphone redirects the user here after payment (?id=...&clientTransactionId=...).
@@ -80,6 +84,25 @@ async function handleConfirm(
           expiresAt,
         },
       });
+
+    // Record the payment for auditing
+    const amount = result.amount;
+    const commission = Math.round(amount * PAYPHONE_COMMISSION_RATE);
+    const netAmount = amount - commission;
+
+    await db.insert(payment).values({
+      userId,
+      transactionId: String(result.transactionId),
+      clientTransactionId: clientTxId,
+      amount,
+      commission,
+      netAmount,
+      status: "approved",
+      reference: "Acceso Premium Ecuacity",
+      cardBrand: result.cardBrand,
+      cardType: result.cardType,
+      authorizationCode: result.authorizationCode,
+    });
 
     return NextResponse.redirect(
       new URL(`/students/upgrade?success=true&days=${durationDays}`, requestUrl),
