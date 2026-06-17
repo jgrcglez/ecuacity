@@ -71,19 +71,20 @@ async function main() {
   }
   console.log(`  ✓ ${categoryValues.length} categorías`);
 
-  // ── Questions + answers ───────────────────────────────────
-  let qCount = 0;
-  let aCount = 0;
-
-  for (const q of questionValues) {
-    await db.insert(question).values({
-      id: q.id,
-      text: q.text,
-      categoryId: q.categoryId,
-      imageUrl: q.imageUrl ?? null,
-      order: q.order,
-      status: q.status ?? "active",
-    }).onConflictDoUpdate({
+  // ── Questions (batch) ─────────────────────────────────────
+  const BATCH = 50;
+  for (let i = 0; i < questionValues.length; i += BATCH) {
+    const batch = questionValues.slice(i, i + BATCH);
+    await db.insert(question).values(
+      batch.map(q => ({
+        id: q.id,
+        text: q.text,
+        categoryId: q.categoryId,
+        imageUrl: q.imageUrl ?? null,
+        order: q.order,
+        status: q.status ?? "active",
+      }))
+    ).onConflictDoUpdate({
       target: question.id,
       set: {
         text: sql`EXCLUDED.text`,
@@ -93,29 +94,32 @@ async function main() {
         status: sql`EXCLUDED.status`,
       },
     });
-    qCount++;
-
-    for (const a of q.answers) {
-      await db.insert(answerOption).values({
-        id: a.id,
-        questionId: a.questionId,
-        text: a.text,
-        isCorrect: a.isCorrect,
-        order: a.order,
-      }).onConflictDoUpdate({
-        target: answerOption.id,
-        set: {
-          text: sql`EXCLUDED.text`,
-          isCorrect: sql`EXCLUDED.is_correct`,
-          order: sql`EXCLUDED.order`,
-        },
-      });
-      aCount++;
-    }
   }
+  console.log(`  ✓ ${questionValues.length} preguntas`);
 
-  console.log(`  ✓ ${qCount} preguntas`);
-  console.log(`  ✓ ${aCount} opciones de respuesta`);
+  // ── Answer options (batch) ────────────────────────────────
+  const allAnswers = questionValues.flatMap(q =>
+    q.answers.map(a => ({
+      id: a.id,
+      questionId: a.questionId,
+      text: a.text,
+      isCorrect: a.isCorrect,
+      order: a.order,
+    }))
+  );
+
+  for (let i = 0; i < allAnswers.length; i += BATCH) {
+    const batch = allAnswers.slice(i, i + BATCH);
+    await db.insert(answerOption).values(batch).onConflictDoUpdate({
+      target: answerOption.id,
+      set: {
+        text: sql`EXCLUDED.text`,
+        isCorrect: sql`EXCLUDED.is_correct`,
+        order: sql`EXCLUDED.order`,
+      },
+    });
+  }
+  console.log(`  ✓ ${allAnswers.length} opciones de respuesta`);
   console.log("\n✅ Seed complete");
 }
 

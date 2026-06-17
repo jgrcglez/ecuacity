@@ -24,7 +24,7 @@ export function CtaLink() {
       <Button
         size="lg"
         variant="outline"
-        className="border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 font-semibold h-12 px-8"
+        className="border-2 border-white/30 bg-white/10 text-white hover:bg-white/20 hover:border-white/50 hover:text-white font-semibold h-12 px-8"
         asChild
       >
         <Link href={ctaHref}>
