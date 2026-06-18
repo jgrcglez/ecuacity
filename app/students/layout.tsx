@@ -10,6 +10,7 @@ import {
   Play,
   FolderTree,
   Sparkles,
+  RefreshCw,
   User,
   LogOut,
   Menu,
@@ -32,7 +33,10 @@ function NavItems({ isPremium, onNavClick }: { isPremium: boolean; onNavClick?: 
     { label: "Dashboard", href: "/students/dashboard", icon: LayoutDashboard },
     { label: "Practicar", href: "/students/practicar", icon: Play },
     ...(isPremium
-      ? [{ label: "Categorías", href: "/students/categorias", icon: FolderTree }]
+      ? [
+          { label: "Categorías", href: "/students/categorias", icon: FolderTree },
+          { label: "Repasar falladas", href: "/students/practicar?mode=failed", icon: RefreshCw },
+        ]
       : [{ label: "Mejorar plan", href: "/students/upgrade", icon: Sparkles }]
     ),
     { label: "Perfil", href: "/students/profile", icon: User },
