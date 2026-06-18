@@ -51,7 +51,7 @@ function NavItems({ isPremium, onNavClick }: { isPremium: boolean; onNavClick?: 
         const Icon = item.icon;
         const active = item.href.includes("?mode=failed")
           ? isFailedMode
-          : pathname === item.href;
+          : pathname === item.href && !(item.href === "/students/practicar" && isFailedMode);
         return (
           <Link
             key={item.href}
