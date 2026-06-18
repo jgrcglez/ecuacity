@@ -58,17 +58,12 @@ async function main() {
 
   const { categories: categoryValues, questions: questionValues } = seedData;
 
+  // ── Truncate existing data (order matters for FK constraints) ─
+  await db.execute(sql`TRUNCATE TABLE user_question_assignment, user_progress, answer_option, question, category RESTART IDENTITY CASCADE`);
+  console.log("  ✓ Tablas truncadas");
+
   // ── Categories ────────────────────────────────────────────
-  for (const row of categoryValues) {
-    await db.insert(category).values(row).onConflictDoUpdate({
-      target: category.id,
-      set: {
-        name: sql`EXCLUDED.name`,
-        description: sql`EXCLUDED.description`,
-        sortOrder: sql`EXCLUDED.sort_order`,
-      },
-    });
-  }
+  await db.insert(category).values(categoryValues);
   console.log(`  ✓ ${categoryValues.length} categorías`);
 
   // ── Questions (batch) ─────────────────────────────────────
@@ -84,16 +79,7 @@ async function main() {
         order: q.order,
         status: q.status ?? "active",
       }))
-    ).onConflictDoUpdate({
-      target: question.id,
-      set: {
-        text: sql`EXCLUDED.text`,
-        categoryId: sql`EXCLUDED.category_id`,
-        imageUrl: sql`EXCLUDED.image_url`,
-        order: sql`EXCLUDED.order`,
-        status: sql`EXCLUDED.status`,
-      },
-    });
+    );
   }
   console.log(`  ✓ ${questionValues.length} preguntas`);
 
@@ -109,15 +95,7 @@ async function main() {
   );
 
   for (let i = 0; i < allAnswers.length; i += BATCH) {
-    const batch = allAnswers.slice(i, i + BATCH);
-    await db.insert(answerOption).values(batch).onConflictDoUpdate({
-      target: answerOption.id,
-      set: {
-        text: sql`EXCLUDED.text`,
-        isCorrect: sql`EXCLUDED.is_correct`,
-        order: sql`EXCLUDED.order`,
-      },
-    });
+    await db.insert(answerOption).values(allAnswers.slice(i, i + BATCH));
   }
   console.log(`  ✓ ${allAnswers.length} opciones de respuesta`);
   console.log("\n✅ Seed complete");
