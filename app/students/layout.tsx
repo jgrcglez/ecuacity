@@ -25,6 +25,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Suspense } from "react";
 import { cn } from "@/lib/utils";
 
 function NavItems({ isPremium, onNavClick }: { isPremium: boolean; onNavClick?: () => void }) {
@@ -122,7 +123,7 @@ export default function StudentsLayout({ children }: { children: React.ReactNode
           </div>
           <span className="text-base font-bold tracking-tight">Ecuacity</span>
         </Link>
-        <NavItems isPremium={isPremium} />
+        <Suspense fallback={null}><NavItems isPremium={isPremium} /></Suspense>
         <div className="border-t border-white/10 px-3 py-4 space-y-3 shrink-0">
           <UserSection isPremium={isPremium} />
         </div>
@@ -153,7 +154,7 @@ export default function StudentsLayout({ children }: { children: React.ReactNode
                   <X className="size-4" />
                 </button>
               </div>
-              <NavItems isPremium={isPremium} onNavClick={() => setMenuOpen(false)} />
+              <Suspense fallback={null}><NavItems isPremium={isPremium} onNavClick={() => setMenuOpen(false)} /></Suspense>
               <div className="border-t border-white/10 px-3 py-4 space-y-3 shrink-0">
                 <UserSection isPremium={isPremium} onNavClick={() => setMenuOpen(false)} />
               </div>
