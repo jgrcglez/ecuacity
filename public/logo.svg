@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="shield-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#003893"/>
+      <stop offset="40%" stop-color="#003893"/>
+      <stop offset="40%" stop-color="#FFD100"/>
+      <stop offset="70%" stop-color="#FFD100"/>
+      <stop offset="70%" stop-color="#ED1C24"/>
+      <stop offset="100%" stop-color="#ED1C24"/>
+    </linearGradient>
+  </defs>
+  <!-- Shield -->
+  <path d="M256 40 L420 110 L420 250 C420 360 340 450 256 478 C172 450 92 360 92 250 L92 110 Z" fill="url(#shield-grad)" stroke="#003893" stroke-width="6"/>
+  <!-- Shield inner border -->
+  <path d="M256 60 L396 122 L396 248 C396 348 324 430 256 456 C188 430 116 348 116 248 L116 122 Z" fill="none" stroke="white" stroke-width="3" opacity="0.3"/>
+  <!-- Book spine -->
+  <rect x="236" y="170" width="40" height="160" rx="3" fill="#003893"/>
+  <!-- Left page -->
+  <path d="M236 170 L130 190 L130 340 L236 330 Z" fill="white" opacity="0.95"/>
+  <!-- Right page -->
+  <path d="M276 170 L382 190 L382 340 L276 330 Z" fill="white" opacity="0.95"/>
+  <!-- Page lines left -->
+  <line x1="155" y1="220" x2="220" y2="210" stroke="#003893" stroke-width="2" opacity="0.4"/>
+  <line x1="155" y1="240" x2="220" y2="230" stroke="#003893" stroke-width="2" opacity="0.4"/>
+  <line x1="155" y1="260" x2="220" y2="250" stroke="#003893" stroke-width="2" opacity="0.4"/>
+  <line x1="155" y1="280" x2="220" y2="270" stroke="#003893" stroke-width="2" opacity="0.4"/>
+  <line x1="155" y1="300" x2="220" y2="290" stroke="#003893" stroke-width="2" opacity="0.4"/>
+  <!-- Page lines right -->
+  <line x1="292" y1="210" x2="357" y2="220" stroke="#003893" stroke-width="2" opacity="0.4"/>
+  <line x1="292" y1="230" x2="357" y2="240" stroke="#003893" stroke-width="2" opacity="0.4"/>
+  <line x1="292" y1="250" x2="357" y2="260" stroke="#003893" stroke-width="2" opacity="0.4"/>
+  <line x1="292" y1="270" x2="357" y2="280" stroke="#003893" stroke-width="2" opacity="0.4"/>
+  <line x1="292" y1="290" x2="357" y2="300" stroke="#003893" stroke-width="2" opacity="0.4"/>
+  <!-- Text on pages -->
+  <text x="256" y="380" text-anchor="middle" font-family="Georgia, serif" font-size="72" font-weight="bold" fill="#003893">EC</text>
+</svg>

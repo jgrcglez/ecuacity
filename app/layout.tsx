@@ -17,7 +17,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     title: "Ecuacity",
-    description: "Aplicación Ecuacity",
+    description: "Simulador de ciudadanía ecuatoriana",
+    icons: {
+        icon: "/favicon.svg",
+        apple: "/logo.svg",
+    },
+};
 };
 
 export default function RootLayout({

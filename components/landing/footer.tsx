@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GraduationCap } from "lucide-react";
+import { ShieldBook } from "@/components/shield-book";
 
 const FOOTER_LINKS = {
   Plataforma: [
@@ -30,7 +30,7 @@ export default function Footer() {
             <div className="col-span-2">
               <Link href="/" className="flex items-center gap-2.5 mb-4">
                 <div className="size-9 rounded-xl bg-flag-yellow flex items-center justify-center">
-                  <GraduationCap className="size-5 text-flag-blue" />
+                  <ShieldBook className="size-5 text-flag-blue" />
                 </div>
                 <span className="text-xl font-bold text-white tracking-tight">
                   Ecuacity

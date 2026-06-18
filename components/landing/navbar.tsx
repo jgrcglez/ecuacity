@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth/auth-client";
+import { ShieldBook } from "@/components/shield-book";
 import {
-  GraduationCap,
   Menu,
   X,
   LogOut,
@@ -199,7 +199,7 @@ export default function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 group">
               <div className="size-9 rounded-xl bg-flag-yellow flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                <GraduationCap className="size-5 text-flag-blue" />
+                <ShieldBook className="size-5 text-flag-blue" />
               </div>
               <span className="text-xl font-bold text-white tracking-tight">Ecuacity</span>
             </Link>
