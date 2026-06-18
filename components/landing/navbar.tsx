@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth/auth-client";
+import { ShieldBook } from "@/components/shield-book";
 import {
-  GraduationCap,
   Menu,
   X,
   LogOut,
@@ -108,7 +108,7 @@ function MobileDrawerContent({ onNavClick }: { onNavClick?: () => void }) {
   return (
     <div className="flex h-full flex-col">
       {/* Brand header */}
-      <div className="flex items-center justify-between px-5 h-16 border-b border-white/10 shrink-0">
+      <div className="flex items-center justify-between px-5 h-20 border-b border-white/10 shrink-0">
         <span className="text-lg font-bold text-white">Menú</span>
         <button onClick={onNavClick} className="p-1.5 text-white/60 hover:text-white rounded-lg hover:bg-white/10">
           <X className="size-5" />
@@ -195,13 +195,11 @@ export default function Navbar() {
         )}
       >
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="size-9 rounded-xl bg-flag-yellow flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                <GraduationCap className="size-5 text-flag-blue" />
-              </div>
-              <span className="text-xl font-bold text-white tracking-tight">Ecuacity</span>
+              <ShieldBook className="size-12" />
+              <span className="text-2xl font-bold text-white tracking-tight">Ecuacity</span>
             </Link>
 
             {/* Desktop nav */}

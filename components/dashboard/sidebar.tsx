@@ -1,7 +1,7 @@
 "use client";
 
+import { ShieldBook } from "@/components/shield-book";
 import {
-  GraduationCap,
   LayoutDashboard,
   FileQuestion,
   FolderTree,
@@ -117,7 +117,7 @@ export default function Sidebar() {
       <aside className="hidden md:flex md:flex-col md:w-64 bg-flag-blue text-white">
         <div className="flex items-center gap-2.5 px-6 h-16 shrink-0">
           <div className="size-8 rounded-lg bg-flag-yellow flex items-center justify-center">
-            <GraduationCap className="size-4 text-flag-blue" />
+            <ShieldBook className="size-7" />
           </div>
           <span className="text-lg font-bold tracking-tight">Ecuacity</span>
         </div>

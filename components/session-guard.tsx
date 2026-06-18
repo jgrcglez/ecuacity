@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/auth-client";
-import { GraduationCap, LogOut } from "lucide-react";
+import { ShieldBook } from "@/components/shield-book";
+import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AUTH_PAGES,
@@ -72,7 +73,7 @@ export default function SessionGuard({ children }: { children: React.ReactNode }
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-card rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center space-y-5">
             <div className="size-14 rounded-full bg-flag-blue/10 flex items-center justify-center mx-auto">
-              <GraduationCap className="size-7 text-flag-blue" />
+              <ShieldBook size={28} />
             </div>
 
             <div className="space-y-1.5">

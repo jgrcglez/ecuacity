@@ -1,6 +1,7 @@
 "use client";
 
-import { GraduationCap, Bell } from "lucide-react";
+import { ShieldBook } from "@/components/shield-book";
+import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +25,7 @@ export default function Header() {
       {/* Left side — mobile brand */}
       <div className="flex items-center gap-2 md:hidden">
         <div className="size-7 rounded-lg bg-flag-blue flex items-center justify-center">
-          <GraduationCap className="size-3.5 text-flag-yellow" />
+          <ShieldBook size={14} />
         </div>
         <span className="text-base font-bold tracking-tight text-flag-blue">
           Ecuacity

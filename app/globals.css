@@ -45,7 +45,8 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   --color-flag-blue: #003893;
-  --color-flag-yellow: #FFD100;
+  --color-flag-blue-light: #0e5a96;
+  --color-flag-yellow: #fad200;
   --color-flag-red: #ED1C24;
   --color-flag-yellow-dark: #B39500;
 }
