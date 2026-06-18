@@ -20,46 +20,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Faltan datos" }, { status: 400 });
   }
 
-  // Verify the question exists
-  const [q] = await db
-    .select({ id: question.id })
-    .from(question)
-    .where(eq(question.id, questionId))
-    .limit(1);
+  // Verify question + get correct answer + check existing progress (parallel)
+  const [qRows, correctRows, existingRows] = await Promise.all([
+    db.select({ id: question.id }).from(question).where(eq(question.id, questionId)).limit(1),
+    db.select({ id: answerOption.id }).from(answerOption).where(and(eq(answerOption.questionId, questionId), eq(answerOption.isCorrect, true))).limit(1),
+    db.select({ id: userProgress.id }).from(userProgress).where(and(eq(userProgress.userId, userId), eq(userProgress.questionId, questionId))).limit(1),
+  ]);
+
+  const [q] = qRows;
+  const [correct] = correctRows;
+  const [existing] = existingRows;
 
   if (!q) {
     return NextResponse.json({ error: "Pregunta no encontrada" }, { status: 404 });
   }
-
-  // Get the correct answer (server-side only)
-  const [correct] = await db
-    .select({ id: answerOption.id })
-    .from(answerOption)
-    .where(
-      and(
-        eq(answerOption.questionId, questionId),
-        eq(answerOption.isCorrect, true),
-      ),
-    )
-    .limit(1);
-
   if (!correct) {
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 
   const isCorrect = selectedOptionId === correct.id;
-
-  // Upsert progress — record the latest attempt
-  const [existing] = await db
-    .select({ id: userProgress.id })
-    .from(userProgress)
-    .where(
-      and(
-        eq(userProgress.userId, userId),
-        eq(userProgress.questionId, questionId),
-      ),
-    )
-    .limit(1);
 
   if (existing) {
     await db
