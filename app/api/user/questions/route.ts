@@ -138,13 +138,14 @@ async function assembleResponse(
     .leftJoin(category, eq(question.categoryId, category.id))
     .where(inArray(question.id, questionIds));
 
-  // Options (isCorrect stripped)
+  // Options (fetch isCorrect server-side to pick 3)
   const optionRows = await db
     .select({
       id: answerOption.id,
       questionId: answerOption.questionId,
       text: answerOption.text,
       order: answerOption.order,
+      isCorrect: answerOption.isCorrect,
     })
     .from(answerOption)
     .where(inArray(answerOption.questionId, questionIds))
@@ -178,18 +179,29 @@ async function assembleResponse(
   const questions = questionIds
     .map((id) => questionRows.find((r) => r.id === id))
     .filter(Boolean)
-    .map((q) => ({
-      id: q!.id,
-      text: q!.text,
-      categoryName: q!.categoryName ?? "",
-      imageUrl: q!.imageUrl,
-      options: shuffle(optionsByQuestion[q!.id] ?? []).map((o) => ({
-        id: o.id,
-        text: o.text,
-        order: o.order,
-      })),
-      progress: progressMap[q!.id] ?? null,
-    }));
+    .map((q) => {
+      const allOpts = optionsByQuestion[q!.id] ?? [];
+      const correct = allOpts.find((o) => o.isCorrect);
+      const distractors = allOpts.filter((o) => !o.isCorrect);
+      // Pick correct + 2 random distractors (or all if <2 available)
+      const picked = [
+        correct!,
+        ...shuffle(distractors).slice(0, 2),
+      ].filter(Boolean);
+      // Shuffle final order and strip isCorrect
+      return {
+        id: q!.id,
+        text: q!.text,
+        categoryName: q!.categoryName ?? "",
+        imageUrl: q!.imageUrl,
+        options: shuffle(picked).map((o, i) => ({
+          id: o.id,
+          text: o.text,
+          order: i,
+        })),
+        progress: progressMap[q!.id] ?? null,
+      };
+    });
 
   const response: Record<string, unknown> = { questions, total };
 
