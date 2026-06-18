@@ -15,10 +15,54 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
+const siteUrl = "https://ecuacity.com";
+
 export const metadata: Metadata = {
-    title: "Ecuacity",
-    description: "Simulador de ciudadanía ecuatoriana",
+    title: {
+        template: "%s | Ecuacity",
+        default: "Ecuacity — Simulador de Ciudadanía Ecuatoriana",
+    },
+    description:
+        "Prepárate para el examen de naturalización ecuatoriana con nuestro simulador oficial. Más de 1,000 preguntas de historia, geografía, cultura y leyes del Ecuador.",
     icons: "/logo.png",
+    metadataBase: new URL(siteUrl),
+    alternates: { canonical: siteUrl },
+    openGraph: {
+        title: "Ecuacity — Simulador de Ciudadanía Ecuatoriana",
+        description:
+            "Prepárate para el examen de naturalización. Más de 1,000 preguntas oficiales.",
+        url: siteUrl,
+        siteName: "Ecuacity",
+        locale: "es_EC",
+        type: "website",
+        images: [{ url: "/logo.png", width: 512, height: 512 }],
+    },
+    twitter: {
+        card: "summary",
+        title: "Ecuacity — Simulador de Ciudadanía",
+        description: "Prepárate para el examen de naturalización ecuatoriana.",
+        images: ["/logo.png"],
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+        },
+    },
+    keywords: [
+        "examen ciudadanía ecuatoriana",
+        "naturalización Ecuador",
+        "simulador examen Ecuador",
+        "preguntas ciudadanía Ecuador",
+        "test naturalización ecuatoriana",
+        "ciudadanía ecuatoriana",
+        "examen de nacionalidad Ecuador",
+    ],
 };
 
 export default function RootLayout({
@@ -33,6 +77,19 @@ export default function RootLayout({
             data-scroll-behavior="smooth"
         >
         <body className={`${geistSans.className} min-h-full flex flex-col antialiased`}>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                name: "Ecuacity",
+                url: siteUrl,
+                description: "Simulador de examen de ciudadanía ecuatoriana con más de 1,000 preguntas.",
+                applicationCategory: "EducationalApplication",
+                operatingSystem: "All",
+                offers: { "@type": "Offer", price: "9.99", priceCurrency: "USD" },
+                author: { "@type": "Organization", name: "Ecuacity" },
+            }),
+        }} />
         <TooltipProvider>
         <SessionGuard>
         {children}
