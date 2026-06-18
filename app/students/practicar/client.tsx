@@ -26,6 +26,8 @@ type ViewState = "loading" | "exam" | "results";
 export default function PracticarClient() {
   const searchParams = useSearchParams();
   const categoryId = searchParams.get("categoryId");
+  const mode = searchParams.get("mode");
+  const isFailedMode = mode === "failed";
   const [retakeCount, setRetakeCount] = useState(0);
 
   const [view, setView] = useState<ViewState>("loading");
@@ -38,9 +40,11 @@ export default function PracticarClient() {
     async function load() {
       setView("loading");
       try {
-        const url = categoryId
-          ? `/api/user/questions?categoryId=${categoryId}&page=1`
-          : "/api/user/questions";
+        const url = isFailedMode
+          ? "/api/user/failed-questions"
+          : categoryId
+            ? `/api/user/questions?categoryId=${categoryId}&page=1`
+            : "/api/user/questions";
 
         const res = await fetch(url);
         if (!res.ok) throw new Error();
@@ -98,18 +102,30 @@ export default function PracticarClient() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Practicar</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          {isFailedMode ? "Repasar falladas" : "Practicar"}
+        </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          {categoryId ? questions[0]?.categoryName ?? "Categoría" : "Modo práctica"}
+          {isFailedMode
+            ? `${questions.length} preguntas respondidas incorrectamente`
+            : categoryId
+              ? questions[0]?.categoryName ?? "Categoría"
+              : "Modo práctica"}
         </p>
       </div>
 
       {view === "exam" && questions.length === 0 ? (
         <div className="text-center py-20">
           <BookOpen className="size-12 text-muted-foreground/30 mx-auto mb-4" />
-          <h2 className="text-lg font-bold text-foreground mb-2">No hay preguntas disponibles</h2>
+          <h2 className="text-lg font-bold text-foreground mb-2">
+            {isFailedMode ? "No hay preguntas falladas" : "No hay preguntas disponibles"}
+          </h2>
           <p className="text-sm text-muted-foreground">
-            {categoryId ? "Esta categoría no tiene preguntas todavía." : "El banco de preguntas aún no tiene contenido."}
+            {isFailedMode
+              ? "Todas tus respuestas han sido correctas. ¡Sigue así!"
+              : categoryId
+                ? "Esta categoría no tiene preguntas todavía."
+                : "El banco de preguntas aún no tiene contenido."}
           </p>
         </div>
       ) : view === "exam" ? (
