@@ -29,7 +29,7 @@ export default function Footer() {
             {/* Brand column */}
             <div className="col-span-2">
               <Link href="/" className="flex items-center gap-2.5 mb-4">
-                <ShieldBook className="size-12" />
+                <ShieldBook size={48} />
                 <span className="text-2xl font-bold text-white tracking-tight">
                   Ecuacity
                 </span>
