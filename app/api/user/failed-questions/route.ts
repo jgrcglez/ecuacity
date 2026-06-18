@@ -8,7 +8,7 @@ import {
   userProgress,
 } from "@/lib/db/schema/questions-schema";
 import { subscription } from "@/lib/db/schema/subscription-schema";
-import { eq, sql, and, inArray, desc } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -38,12 +38,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Solo para usuarios Premium" }, { status: 403 });
   }
 
-  // Find distinct failed question IDs (latest attempt per question)
-  const failedQIds = await db
-    .select({
-      questionId: userProgress.questionId,
-      maxAnswered: sql<string>`MAX(${userProgress.answeredAt})`,
-    })
+  // Find distinct question IDs where user EVER answered wrong
+  const failedRows = await db
+    .select({ questionId: userProgress.questionId })
     .from(userProgress)
     .where(
       and(
@@ -51,11 +48,10 @@ export async function GET(request: NextRequest) {
         eq(userProgress.isCorrect, false),
       ),
     )
-    .groupBy(userProgress.questionId)
-    .orderBy(desc(sql`MAX(${userProgress.answeredAt})`))
-    .limit(50);
+    .limit(100);
 
-  const questionIds = failedQIds.map((r) => r.questionId);
+  // Deduplicate in JS since Drizzle selectDistinct can be finicky
+  const questionIds = [...new Set(failedRows.map((r) => r.questionId))].slice(0, 50);
   if (questionIds.length === 0) {
     return NextResponse.json({ questions: [], total: 0 });
   }

@@ -20,17 +20,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Faltan datos" }, { status: 400 });
   }
 
-  // Verify question + get correct answer + check existing progress (parallel)
-  const [qRows, correctRows, existingRows] = await Promise.all([
+  // Verify question + get correct answer
+  const [qRows, correctRows] = await Promise.all([
     db.select({ id: question.id }).from(question).where(eq(question.id, questionId)).limit(1),
     db.select({ id: answerOption.id }).from(answerOption).where(and(eq(answerOption.questionId, questionId), eq(answerOption.isCorrect, true))).limit(1),
-    db.select({ id: userProgress.id }).from(userProgress).where(and(eq(userProgress.userId, userId), eq(userProgress.questionId, questionId))).limit(1),
   ]);
 
   const [q] = qRows;
   const [correct] = correctRows;
-  const [existing] = existingRows;
-
   if (!q) {
     return NextResponse.json({ error: "Pregunta no encontrada" }, { status: 404 });
   }
@@ -40,23 +37,14 @@ export async function POST(request: NextRequest) {
 
   const isCorrect = selectedOptionId === correct.id;
 
-  if (existing) {
-    await db
-      .update(userProgress)
-      .set({
-        selectedOptionId,
-        isCorrect,
-        answeredAt: new Date(),
-      })
-      .where(eq(userProgress.id, existing.id));
-  } else {
-    await db.insert(userProgress).values({
-      userId,
-      questionId,
-      selectedOptionId,
-      isCorrect,
-    });
-  }
+  // Always insert to preserve history — allows "repasar falladas" to
+  // find questions where the user ever answered wrong.
+  await db.insert(userProgress).values({
+    userId,
+    questionId,
+    selectedOptionId,
+    isCorrect,
+  });
 
   return NextResponse.json({
     isCorrect,

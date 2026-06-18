@@ -38,7 +38,7 @@ function NavItems({ isPremium, onNavClick }: { isPremium: boolean; onNavClick?: 
     ...(isPremium
       ? [
           { label: "Categorías", href: "/students/categorias", icon: FolderTree },
-          { label: "Repasar falladas", href: "/students/practicar?mode=failed", icon: RefreshCw },
+          { label: "Repasar errores", href: "/students/practicar?mode=failed", icon: RefreshCw },
         ]
       : [{ label: "Mejorar plan", href: "/students/upgrade", icon: Sparkles }]
     ),
