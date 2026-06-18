@@ -19,10 +19,9 @@ export const metadata: Metadata = {
     title: "Ecuacity",
     description: "Simulador de ciudadanía ecuatoriana",
     icons: {
-        icon: "/favicon.svg",
-        apple: "/logo.svg",
+        icon: [{ url: "/logo.png", type: "image/png", sizes: "512x512" }],
+        apple: [{ url: "/logo.png", type: "image/png", sizes: "512x512" }],
     },
-};
 };
 
 export default function RootLayout({

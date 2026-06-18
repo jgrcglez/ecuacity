@@ -4,7 +4,8 @@ import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {ArrowLeft, GraduationCap, Loader2, Mail, MailCheck} from "lucide-react";
+import { ShieldBook } from "@/components/shield-book";
+import {ArrowLeft, Loader2, Mail, MailCheck} from "lucide-react";
 import Link from "next/link";
 import {useState, useRef, useEffect} from "react";
 
@@ -167,7 +168,7 @@ export default function SignUp() {
         <div className="relative w-full max-w-md space-y-6">
           <div className="text-center">
             <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20 mb-2">
-              <GraduationCap className="size-7 text-flag-yellow" />
+              <ShieldBook size={28} />
             </div>
           </div>
           <Card className="w-full border-0 shadow-2xl bg-card/95 backdrop-blur-sm">
@@ -233,7 +234,7 @@ export default function SignUp() {
         <div className="text-center space-y-2">
           <Link href="/" className="contents">
             <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20 mb-2">
-              <GraduationCap className="size-7 text-flag-yellow" />
+              <ShieldBook size={28} />
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">Ecuacity</h1>
           </Link>

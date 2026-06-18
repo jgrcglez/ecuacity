@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { GraduationCap, Loader2, ArrowLeft, MailCheck } from "lucide-react";
+import { ShieldBook } from "@/components/shield-book";
+import { Loader2, ArrowLeft, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,7 +43,7 @@ export default function ForgotPasswordPage() {
         {/* Brand */}
         <div className="flex items-center justify-center gap-2.5 mb-8">
           <div className="size-10 rounded-xl bg-flag-yellow flex items-center justify-center">
-            <GraduationCap className="size-5 text-flag-blue" />
+            <ShieldBook size={20} />
           </div>
           <span className="text-2xl font-bold text-white">Ecuacity</span>
         </div>

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth/auth-client";
 import {
-  GraduationCap,
   LayoutDashboard,
   Play,
   FolderTree,
@@ -110,7 +109,7 @@ export default function StudentsLayout({ children }: { children: React.ReactNode
       <aside className="hidden md:flex md:flex-col md:w-56 bg-flag-blue text-white">
         <Link href="/students/dashboard" className="flex items-center gap-2.5 px-5 h-14 shrink-0 border-b border-white/10">
           <div className="size-7 rounded-lg bg-flag-yellow flex items-center justify-center">
-            <GraduationCap className="size-3.5 text-flag-blue" />
+            <ShieldBook size={14} />
           </div>
           <span className="text-base font-bold tracking-tight">Ecuacity</span>
         </Link>
@@ -124,7 +123,7 @@ export default function StudentsLayout({ children }: { children: React.ReactNode
       <div className="md:hidden fixed top-0 inset-x-0 z-40 h-14 bg-flag-blue flex items-center justify-between px-4 border-b border-white/10">
         <div className="flex items-center gap-2">
           <div className="size-7 rounded-lg bg-flag-yellow flex items-center justify-center">
-            <GraduationCap className="size-3.5 text-flag-blue" />
+            <ShieldBook size={14} />
           </div>
           <span className="text-base font-bold text-white tracking-tight">Ecuacity</span>
         </div>
