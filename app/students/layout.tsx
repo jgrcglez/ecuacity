@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ShieldBook } from "@/components/shield-book";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth/auth-client";
 import {
   LayoutDashboard,
@@ -29,6 +29,8 @@ import { cn } from "@/lib/utils";
 
 function NavItems({ isPremium, onNavClick }: { isPremium: boolean; onNavClick?: () => void }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isFailedMode = searchParams.get("mode") === "failed";
   const items = [
     { label: "Dashboard", href: "/students/dashboard", icon: LayoutDashboard },
     { label: "Practicar", href: "/students/practicar", icon: Play },
@@ -46,7 +48,9 @@ function NavItems({ isPremium, onNavClick }: { isPremium: boolean; onNavClick?: 
     <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
       {items.map((item) => {
         const Icon = item.icon;
-        const active = pathname === item.href;
+        const active = item.href.includes("?mode=failed")
+          ? isFailedMode
+          : pathname === item.href;
         return (
           <Link
             key={item.href}
