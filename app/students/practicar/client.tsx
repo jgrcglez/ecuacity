@@ -75,7 +75,7 @@ export default function PracticarClient() {
 
     load();
     return () => { cancelled = true; };
-  }, [categoryId, retakeCount]);
+  }, [categoryId, mode, retakeCount]);
 
   const handleComplete = (r: AnswerResult[]) => {
     setResults(r);
