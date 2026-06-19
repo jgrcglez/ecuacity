@@ -58,15 +58,20 @@ async function main() {
 
   const { categories: categoryValues, questions: questionValues } = seedData;
 
-  // ── Truncate existing data (order matters for FK constraints) ─
-  await db.execute(sql`TRUNCATE TABLE answer_option, question, category RESTART IDENTITY CASCADE`);
-  console.log("  ✓ Tablas truncadas");
-
-  // ── Categories ────────────────────────────────────────────
-  await db.insert(category).values(categoryValues);
+  // ── Categories (upsert) ──────────────────────────────────
+  for (const row of categoryValues) {
+    await db.insert(category).values(row).onConflictDoUpdate({
+      target: category.id,
+      set: {
+        name: sql`EXCLUDED.name`,
+        description: sql`EXCLUDED.description`,
+        sortOrder: sql`EXCLUDED.sort_order`,
+      },
+    });
+  }
   console.log(`  ✓ ${categoryValues.length} categorías`);
 
-  // ── Questions (batch) ─────────────────────────────────────
+  // ── Questions (batch upsert) ─────────────────────────────
   const BATCH = 50;
   for (let i = 0; i < questionValues.length; i += BATCH) {
     const batch = questionValues.slice(i, i + BATCH);
@@ -79,11 +84,20 @@ async function main() {
         order: q.order,
         status: q.status ?? "active",
       }))
-    );
+    ).onConflictDoUpdate({
+      target: question.id,
+      set: {
+        text: sql`EXCLUDED.text`,
+        categoryId: sql`EXCLUDED.category_id`,
+        imageUrl: sql`EXCLUDED.image_url`,
+        order: sql`EXCLUDED.order`,
+        status: sql`EXCLUDED.status`,
+      },
+    });
   }
   console.log(`  ✓ ${questionValues.length} preguntas`);
 
-  // ── Answer options (batch) ────────────────────────────────
+  // ── Answer options (batch upsert) ────────────────────────
   const allAnswers = questionValues.flatMap(q =>
     q.answers.map(a => ({
       id: a.id,
@@ -95,7 +109,14 @@ async function main() {
   );
 
   for (let i = 0; i < allAnswers.length; i += BATCH) {
-    await db.insert(answerOption).values(allAnswers.slice(i, i + BATCH));
+    await db.insert(answerOption).values(allAnswers.slice(i, i + BATCH)).onConflictDoUpdate({
+      target: answerOption.id,
+      set: {
+        text: sql`EXCLUDED.text`,
+        isCorrect: sql`EXCLUDED.is_correct`,
+        order: sql`EXCLUDED.order`,
+      },
+    });
   }
   console.log(`  ✓ ${allAnswers.length} opciones de respuesta`);
   console.log("\n✅ Seed complete");
