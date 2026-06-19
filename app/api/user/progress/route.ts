@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db/drizzle";
 import { userProgress } from "@/lib/db/schema/questions-schema";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 // ─── GET — progress summary ────────────────────────────
 export async function GET(request: NextRequest) {
@@ -13,19 +13,32 @@ export async function GET(request: NextRequest) {
 
   const userId = session.user.id;
 
-  const [row] = await db
+  // Count distinct questions (latest attempt per question)
+  const rows = await db
     .select({
-      totalAnswered: sql<number>`cast(count(*) as int)`,
-      totalCorrect: sql<number>`cast(sum(case when ${userProgress.isCorrect} then 1 else 0 end) as int)`,
-      totalIncorrect: sql<number>`cast(sum(case when ${userProgress.isCorrect} then 0 else 1 end) as int)`,
+      questionId: userProgress.questionId,
+      isCorrect: userProgress.isCorrect,
+      answeredAt: userProgress.answeredAt,
     })
     .from(userProgress)
-    .where(eq(userProgress.userId, userId));
+    .where(eq(userProgress.userId, userId))
+    .orderBy(userProgress.answeredAt);
+
+  // Latest attempt per question (manual dedup since insert preserves history)
+  const latest = new Map<string, { isCorrect: boolean }>();
+  for (const r of rows) {
+    latest.set(r.questionId, { isCorrect: r.isCorrect });
+  }
+
+  let correct = 0;
+  for (const v of latest.values()) {
+    if (v.isCorrect) correct++;
+  }
 
   return NextResponse.json({
-    totalAnswered: row?.totalAnswered ?? 0,
-    totalCorrect: row?.totalCorrect ?? 0,
-    totalIncorrect: row?.totalIncorrect ?? 0,
+    totalAnswered: latest.size,
+    totalCorrect: correct,
+    totalIncorrect: latest.size - correct,
   });
 }
 
