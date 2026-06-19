@@ -1,6 +1,7 @@
 "use client";
 
-import { Check, X, RotateCcw, Trophy, Target } from "lucide-react";
+import Link from "next/link";
+import { Check, X, RotateCcw, Trophy, Target, MessageSquare, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AnswerResult } from "./exam-view";
 
@@ -62,6 +63,29 @@ export default function ResultsView({ questions, answers, onRetake }: ResultsVie
           />
         </div>
       </div>
+
+      {/* Testimonial prompt — only when feeling good */}
+      {pct >= 60 && (
+        <div className="rounded-xl border border-flag-blue/20 bg-flag-blue/[0.03] p-5 flex items-center gap-4">
+          <div className="size-10 rounded-full bg-flag-yellow/20 flex items-center justify-center shrink-0">
+            <MessageSquare className="size-5 text-flag-yellow-dark" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-foreground">¿Te está ayudando Ecuacity?</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {pct >= 80
+                ? "¡Tus resultados hablan por sí solos! Comparte tu experiencia para inspirar a otros."
+                : "Cuéntanos cómo va tu preparación. Tu opinión nos ayuda a mejorar."}
+            </p>
+          </div>
+          <Button size="sm" variant="outline" className="shrink-0 border-flag-blue/30 text-flag-blue hover:bg-flag-blue hover:text-white" asChild>
+            <Link href="/contacto?compartir=true">
+              <Star className="size-3.5 mr-1.5" />
+              Compartir
+            </Link>
+          </Button>
+        </div>
+      )}
 
       {/* Per-question review */}
       <div className="space-y-4">

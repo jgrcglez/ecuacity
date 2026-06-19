@@ -13,9 +13,9 @@ const FOOTER_LINKS = {
     { label: "Preguntas frecuentes", href: "#faq" },
   ],
   Legal: [
-    { label: "Términos de uso", href: "#" },
-    { label: "Política de privacidad", href: "#" },
-    { label: "Contacto", href: "mailto:soporte@ecuacity.com" },
+    { label: "Términos de uso", href: "/terminos" },
+    { label: "Política de privacidad", href: "/privacidad" },
+    { label: "Contacto", href: "/contacto" },
   ],
 };
 

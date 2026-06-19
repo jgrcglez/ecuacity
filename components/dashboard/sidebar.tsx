@@ -7,6 +7,7 @@ import {
   FolderTree,
   Users,
   CreditCard,
+  Mail,
   Film,
   User,
   LogOut,
@@ -34,6 +35,7 @@ const navItems = [
   { label: "Categorías", href: "/dashboard/categorias", icon: FolderTree },
   { label: "Usuarios", href: "/dashboard/usuarios", icon: Users },
   { label: "Pagos", href: "/dashboard/pagos", icon: CreditCard },
+  { label: "Mensajes", href: "/dashboard/mensajes", icon: Mail },
   { label: "Videos", href: "/dashboard/videos", icon: Film },
   { label: "Perfil", href: "/dashboard/profile", icon: User },
 ];
