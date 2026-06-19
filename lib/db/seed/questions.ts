@@ -59,7 +59,7 @@ async function main() {
   const { categories: categoryValues, questions: questionValues } = seedData;
 
   // ── Truncate existing data (order matters for FK constraints) ─
-  await db.execute(sql`TRUNCATE TABLE user_question_assignment, user_progress, answer_option, question, category RESTART IDENTITY CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE answer_option, question, category RESTART IDENTITY CASCADE`);
   console.log("  ✓ Tablas truncadas");
 
   // ── Categories ────────────────────────────────────────────
