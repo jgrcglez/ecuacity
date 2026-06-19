@@ -38,20 +38,32 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Solo para usuarios Premium" }, { status: 403 });
   }
 
-  // Find distinct question IDs where user EVER answered wrong
-  const failedRows = await db
-    .select({ questionId: userProgress.questionId })
+  // Get ALL progress rows to build per-question status
+  const allRows = await db
+    .select({
+      questionId: userProgress.questionId,
+      isCorrect: userProgress.isCorrect,
+    })
     .from(userProgress)
-    .where(
-      and(
-        eq(userProgress.userId, userId),
-        eq(userProgress.isCorrect, false),
-      ),
-    )
-    .limit(100);
+    .where(eq(userProgress.userId, userId))
+    .orderBy(userProgress.answeredAt);
 
-  // Deduplicate in JS since Drizzle selectDistinct can be finicky
-  const questionIds = [...new Set(failedRows.map((r) => r.questionId))].slice(0, 50);
+  // Build: which questions were ever correct, and what's the latest status
+  const everCorrect = new Set<string>();
+  const latestStatus = new Map<string, boolean>();
+  for (const r of allRows) {
+    if (r.isCorrect) everCorrect.add(r.questionId);
+    latestStatus.set(r.questionId, r.isCorrect);
+  }
+
+  // Failed = latest attempt is wrong AND never answered correctly
+  const questionIds: string[] = [];
+  for (const [qId, isCorrect] of latestStatus) {
+    if (!isCorrect && !everCorrect.has(qId)) {
+      questionIds.push(qId);
+    }
+  }
+  questionIds.splice(50); // max 50
   if (questionIds.length === 0) {
     return NextResponse.json({ questions: [], total: 0 });
   }
