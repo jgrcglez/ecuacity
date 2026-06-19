@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 interface ShieldBookProps {
   className?: string;
   size?: number;
@@ -6,11 +8,13 @@ interface ShieldBookProps {
 export function ShieldBook({ className, size }: ShieldBookProps) {
   const px = size ?? 48;
   return (
-    <img
+    <Image
       src="/logo.png"
       alt="Ecuacity"
-      height={px}
-      className={`w-auto ${className}`}
+      width={459}
+      height={554}
+      className={className}
+      style={{ height: px, width: "auto" }}
     />
   );
 }
