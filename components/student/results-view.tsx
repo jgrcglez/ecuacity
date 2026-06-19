@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Check, X, RotateCcw, Trophy, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AnswerResult } from "./exam-view";
@@ -18,24 +17,17 @@ interface ResultsViewProps {
   onRetake: () => void;
 }
 
-const LABELS = ["A", "B", "C", "D", "E"];
 
 export default function ResultsView({ questions, answers, onRetake }: ResultsViewProps) {
-  const [resetting, setResetting] = useState(false);
+  const resetting = false;
 
   const answerMap = new Map(answers.map((a) => [a.questionId, a]));
   const correctCount = answers.filter((a) => a.isCorrect).length;
   const total = questions.length;
   const pct = Math.round((correctCount / total) * 100);
 
-  const handleRetake = async () => {
-    setResetting(true);
-    try {
-      await fetch("/api/user/progress", { method: "DELETE" });
-      onRetake();
-    } catch {
-      setResetting(false);
-    }
+  const handleRetake = () => {
+    onRetake();
   };
 
   return (
