@@ -13,7 +13,7 @@ interface ActivityItem {
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({
-    totalAnswered: 0, totalCorrect: 0, totalIncorrect: 0,
+    totalAnswered: 0, totalCorrect: 0, totalIncorrect: 0, totalEverFailed: 0,
     totalBank: 0, bankCorrectPct: 0, bankAttemptedPct: 0, bankFailedPct: 0,
   });
   const [activity, setActivity] = useState<ActivityItem[]>([]);
@@ -88,7 +88,12 @@ export default function DashboardPage() {
             <X className="size-4 text-red-500" />
           </div>
           <div className="text-2xl font-bold text-foreground tracking-tight">{stats.totalIncorrect}</div>
-          <p className="text-xs text-muted-foreground mt-0.5">Respuestas incorrectas</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Pendientes
+            <span className="text-muted-foreground/50 ml-2">
+              ({stats.totalEverFailed} históricas)
+            </span>
+          </p>
           <p className="text-[11px] text-muted-foreground/50 mt-0.5">{stats.bankFailedPct}% del banco total</p>
         </div>
 

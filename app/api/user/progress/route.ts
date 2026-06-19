@@ -32,15 +32,14 @@ export async function GET(request: NextRequest) {
     .orderBy(userProgress.answeredAt);
 
   // Build per-question stats from ALL history
-  // totalAttempted: distinct questions ever attempted
-  // everCorrect: set of questions answered correctly at least once
-  // latestCorrect: whether the latest attempt for each question was correct
   const everCorrect = new Set<string>();
+  const everWrong = new Set<string>();
   const attempted = new Set<string>();
   const latestStatus = new Map<string, boolean>();
 
   for (const r of rows) {
     if (r.isCorrect) everCorrect.add(r.questionId);
+    else everWrong.add(r.questionId);
     attempted.add(r.questionId);
     latestStatus.set(r.questionId, r.isCorrect);
   }
@@ -48,24 +47,25 @@ export async function GET(request: NextRequest) {
   const totalAnswered = attempted.size;
   const totalCorrect = everCorrect.size;
 
-  // Incorrect = distinct questions where latest attempt is wrong AND
-  // they have NEVER been answered correctly (still "failed")
-  let totalIncorrect = 0;
+  // Still wrong: latest attempt is wrong AND never answered correctly
+  let stillWrong = 0;
   for (const qId of attempted) {
-    const latest = latestStatus.get(qId);
-    if (latest === false && !everCorrect.has(qId)) {
-      totalIncorrect++;
+    if (!everCorrect.has(qId) && latestStatus.get(qId) === false) {
+      stillWrong++;
     }
   }
+
+  const totalEverWrong = everWrong.size; // distinct questions ever answered wrong
 
   return NextResponse.json({
     totalAnswered,
     totalCorrect,
-    totalIncorrect,
+    totalIncorrect: stillWrong,
+    totalEverFailed: totalEverWrong,
     totalBank: bankTotal,
     bankCorrectPct: bankTotal > 0 ? Math.round((everCorrect.size / bankTotal) * 100) : 0,
     bankAttemptedPct: bankTotal > 0 ? Math.round((totalAnswered / bankTotal) * 100) : 0,
-    bankFailedPct: bankTotal > 0 ? Math.round((totalIncorrect / bankTotal) * 100) : 0,
+    bankFailedPct: bankTotal > 0 ? Math.round((stillWrong / bankTotal) * 100) : 0,
   });
 }
 
