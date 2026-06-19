@@ -4,12 +4,12 @@ const FAQS = [
   {
     question: "¿Qué incluye el examen de ciudadanía ecuatoriana?",
     answer:
-      "El examen oficial cubre historia, geografía, civismo, cultura, economía y derechos constitucionales del Ecuador. Nuestro simulador incluye preguntas de todas estas categorías, basadas en exámenes reales del Ministerio de Relaciones Exteriores y Movilidad Humana.",
+      "El examen oficial cubre historia, geografía, civismo, cultura, economía y derechos constitucionales del Ecuador. Nuestro simulador incluye preguntas de todas estas categorías, recopiladas de experiencias reales de examinados.",
   },
   {
     question: "¿Las preguntas son iguales a las del examen real?",
     answer:
-      "Nuestras preguntas están diseñadas para ser lo más fieles posible al examen oficial, cubriendo los mismos temas y nivel de dificultad. Son creadas y revisadas por expertos en la materia, pero no son réplicas exactas del examen oficial — son material de preparación.",
+      "Nuestras preguntas cubren los mismos temas y nivel de dificultad del examen oficial, recopiladas de experiencias reales de examinados y fuentes de estudio autorizadas. No son réplicas exactas del examen, sino material de preparación diseñado para ayudarte a practicar.",
   },
   {
     question: "¿Puedo usar Ecuacity en mi celular?",
@@ -19,7 +19,7 @@ const FAQS = [
   {
     question: "¿Cómo funciona el plan Premium?",
     answer:
-      "El plan Premium te da acceso ilimitado a las 1,000+ preguntas, simulaciones sin restricciones, estadísticas detalladas de tu progreso por categoría, modo repaso con explicaciones, y soporte prioritario. Puedes cancelar en cualquier momento.",
+      "El plan Premium te da acceso ilimitado a las 1,049 preguntas, todas las categorías disponibles, práctica ilimitada, repaso de preguntas falladas y estadísticas detalladas de tu progreso. Es un pago único de $9.99 por 30 días sin renovación automática.",
   },
   {
     question: "¿Cuánto tiempo necesito para prepararme?",

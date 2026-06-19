@@ -56,9 +56,9 @@ export default function Hero() {
 
         {/* Subtitle */}
         <p className="animate-fade-in-up animate-delay-200 text-base sm:text-lg text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
-          El simulador de examen más completo basado en preguntas reales
-          del Ministerio de Relaciones Exteriores. Practica con 1,000+ preguntas,
-          recibe retroalimentación inmediata y llega preparado el día del examen.
+          El simulador de examen más completo para la ciudadanía ecuatoriana.
+          Practica con más de 1,000 preguntas, recibe retroalimentación
+          inmediata y llega preparado el día del examen.
         </p>
 
         {/* CTAs — tiny client island */}

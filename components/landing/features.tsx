@@ -5,7 +5,7 @@ const FEATURES = [
     icon: BookOpen,
     title: "Preguntas reales",
     description:
-      "Banco basado en los temas del examen oficial de naturalización del Ministerio de Relaciones Exteriores del Ecuador.",
+      "Más de 1,000 preguntas que cubren historia, geografía, cultura, leyes y símbolos patrios del Ecuador.",
     color: "bg-flag-blue/10 text-flag-blue",
   },
   {

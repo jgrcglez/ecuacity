@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, Clock } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -16,24 +16,25 @@ const PLANS = [
       "Acceso 24/7",
     ],
     cta: "Comenzar gratis",
+    href: "/sign-up",
     highlighted: true,
   },
   {
     name: "Premium",
-    price: "Próximamente",
-    period: "",
+    price: "$9.99",
+    period: "/ 30 días",
     description: "Acceso completo al banco de preguntas.",
     features: [
-      "1,000+ preguntas actualizadas",
-      "Todas las categorías",
-      "Simulaciones ilimitadas",
+      "1,049 preguntas actualizadas",
+      "Todas las categorías disponibles",
+      "Práctica ilimitada",
+      "Repasar preguntas falladas",
       "Estadísticas detalladas",
-      "Modo repaso con explicaciones",
-      "Soporte prioritario",
+      "Pago único — no se renueva",
     ],
-    cta: "Avísame",
+    cta: "Comprar Premium",
+    href: "/students/upgrade",
     highlighted: false,
-    comingSoon: true,
   },
 ];
 
@@ -57,15 +58,14 @@ export default function Pricing() {
               className={cn(
                 "relative rounded-2xl border p-8 flex flex-col",
                 plan.highlighted
-                  ? "border-flag-blue bg-flag-blue/[0.03] shadow-xl shadow-flag-blue/10 ring-1 ring-flag-blue/20"
-                  : "border-border bg-card shadow-sm",
+                  ? "border-flag-blue bg-flag-blue/3 shadow-xl shadow-flag-blue/10 ring-1 ring-flag-blue/20"
+                  : "border-flag-yellow/30 bg-flag-yellow/3 shadow-xl shadow-flag-yellow/10 ring-1 ring-flag-yellow/20",
               )}
             >
-              {plan.comingSoon && (
+              {plan.name === "Premium" && (
                 <div className="absolute -top-3.5 inset-x-0 flex justify-center">
-                  <span className="inline-flex items-center gap-1 bg-muted-foreground text-white text-xs font-semibold px-3 py-1 rounded-full">
-                    <Clock className="size-3" />
-                    Próximamente
+                  <span className="inline-flex items-center gap-1 bg-flag-yellow text-flag-blue text-xs font-semibold px-3 py-1 rounded-full">
+                    Más popular
                   </span>
                 </div>
               )}
@@ -92,9 +92,7 @@ export default function Pricing() {
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm">
                     <Check className="size-4 text-green-500 shrink-0 mt-0.5" />
-                    <span className={plan.comingSoon ? "text-muted-foreground/50" : "text-muted-foreground"}>
-                      {f}
-                    </span>
+                    <span className="text-muted-foreground">{f}</span>
                   </li>
                 ))}
               </ul>
@@ -102,20 +100,13 @@ export default function Pricing() {
               <Button
                 className={cn(
                   "w-full font-semibold",
-                  plan.comingSoon
-                    ? "bg-muted text-muted-foreground cursor-not-allowed"
-                    : plan.highlighted
-                      ? "bg-flag-yellow text-flag-blue hover:bg-flag-blue hover:text-white"
-                      : "bg-flag-blue text-white hover:bg-flag-blue/90",
+                  plan.highlighted
+                    ? "bg-flag-yellow text-flag-blue hover:bg-flag-blue hover:text-white"
+                    : "bg-flag-yellow text-flag-blue hover:bg-flag-blue hover:text-white",
                 )}
-                asChild={!plan.comingSoon}
-                disabled={plan.comingSoon}
+                asChild
               >
-                {plan.comingSoon ? (
-                  <span>{plan.cta}</span>
-                ) : (
-                  <Link href="/sign-up">{plan.cta}</Link>
-                )}
+                <Link href={plan.href}>{plan.cta}</Link>
               </Button>
             </div>
           ))}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Play, ArrowRight } from "lucide-react";
+import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/auth/auth-client";
 
@@ -19,17 +19,6 @@ export function CtaLink() {
         <Link href={ctaHref}>
           <Play className="size-4 mr-2 fill-flag-blue" />
           Comenzar gratis
-        </Link>
-      </Button>
-      <Button
-        size="lg"
-        variant="outline"
-        className="border-2 border-white/30 bg-white/10 text-white hover:bg-white/20 hover:border-white/50 hover:text-white font-semibold h-12 px-8"
-        asChild
-      >
-        <Link href={ctaHref}>
-          Ver preguntas de ejemplo
-          <ArrowRight className="size-4 ml-2" />
         </Link>
       </Button>
     </div>
