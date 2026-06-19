@@ -34,7 +34,8 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    fetchData();
+    const id = setTimeout(() => fetchData(), 0);
+    return () => clearTimeout(id);
   }, [fetchData]);
 
   const accuracy = stats.totalAnswered > 0
@@ -70,7 +71,7 @@ export default function DashboardPage() {
             <BarChart3 className="size-4 text-flag-blue" />
           </div>
           <div className="text-2xl font-bold text-foreground tracking-tight">{stats.totalAnswered}</div>
-          <p className="text-xs text-muted-foreground mt-0.5">Preguntas respondidas</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Respondidas</p>
           <p className="text-[11px] text-muted-foreground/50 mt-0.5">{stats.bankAttemptedPct}% del banco total</p>
         </div>
 
@@ -79,7 +80,7 @@ export default function DashboardPage() {
             <CheckCircle2 className="size-4 text-green-600" />
           </div>
           <div className="text-2xl font-bold text-foreground tracking-tight">{stats.totalCorrect}</div>
-          <p className="text-xs text-muted-foreground mt-0.5">Respuestas correctas</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Correctas</p>
           <p className="text-[11px] text-muted-foreground/50 mt-0.5">{stats.bankCorrectPct}% del banco total</p>
         </div>
 
@@ -88,14 +89,11 @@ export default function DashboardPage() {
             <X className="size-4 text-red-500" />
           </div>
           <div className="text-2xl font-bold text-foreground tracking-tight">{stats.totalIncorrect}</div>
+          <p className="text-xs text-muted-foreground mt-0.5">Permanecen falladas</p>
           <p className="text-xs flex items-center gap-1.5 mt-0.5">
-            <span className="font-semibold text-red-600">{stats.totalIncorrect}</span>
-            <span className="text-muted-foreground">pendientes</span>
-            <span className="text-muted-foreground">·</span>
-            <span className="font-medium text-muted-foreground">{stats.totalEverFailed}</span>
-            <span className="text-muted-foreground">históricas</span>
+            <span className="font-semibold text-red-500">{stats.totalEverFailed}</span>
+            <span className="text-[11px] text-muted-foreground/50 mt-0.5">falladas históricas</span>
           </p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">{stats.bankFailedPct}% del banco total</p>
         </div>
 
         <div className="bg-card rounded-xl border border-border p-5 shadow-sm">
@@ -112,7 +110,7 @@ export default function DashboardPage() {
       {/* Plan card + Action */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Plan tier */}
-        <div className={`rounded-xl border p-6 flex flex-col ${isPremium ? "border-flag-blue bg-flag-blue/[0.03] ring-1 ring-flag-blue/20" : "border-border bg-card"}`}>
+        <div className={`rounded-xl border p-6 flex flex-col ${isPremium ? "border-flag-blue bg-flag-blue/3 ring-1 ring-flag-blue/20" : "border-border bg-card"}`}>
           <div className="flex items-center gap-2 mb-3">
             {isPremium ? <Sparkles className="size-5 text-flag-yellow-dark" /> : <Trophy className="size-5 text-flag-blue" />}
             <h3 className="font-semibold text-foreground">
