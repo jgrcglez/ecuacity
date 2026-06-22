@@ -25,6 +25,7 @@ export default function SignIn() {
   const [success, setSuccess] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+  useEffect(() => { document.title = "Iniciar sesión | Ecuacity"; }, []);
 
   useEffect(() => {
     if (cooldown <= 0) return;

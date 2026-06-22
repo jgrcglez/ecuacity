@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Política de privacidad",
+  description: "Política de privacidad de Ecuacity. Conoce cómo protegemos tus datos personales.",
+};
+
 export default function PrivacidadPage() {
   return (
     <main className="min-h-screen bg-muted/50 py-20">

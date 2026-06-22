@@ -16,6 +16,7 @@ function ContactForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  useEffect(() => { document.title = "Contacto | Ecuacity"; }, []);
 
   useEffect(() => {
     const id = setTimeout(() => {

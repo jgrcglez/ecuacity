@@ -20,6 +20,7 @@ export default function SignUp() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+  useEffect(() => { document.title = "Crear cuenta | Ecuacity"; }, []);
 
   useEffect(() => {
     if (cooldown <= 0) return;
