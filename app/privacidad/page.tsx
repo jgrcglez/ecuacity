@@ -29,12 +29,12 @@ export default function PrivacidadPage() {
           <p>
             Puedes solicitar la eliminación de tu cuenta y datos personales en cualquier
             momento escribiendo a{" "}
-            <a href="/contacto" className="text-flag-blue underline">/contacto</a>.
+            <a href="/contacto" className="text-flag-blue underline">Contacto</a>.
           </p>
           <h2 className="text-lg font-semibold text-foreground mt-6">Contacto</h2>
           <p>
             Si tienes preguntas sobre esta política, escríbenos a{" "}
-            <a href="/contacto" className="text-flag-blue underline">/contacto</a>.
+            <a href="/contacto" className="text-flag-blue underline">Contacto</a>.
           </p>
         </div>
       </div>

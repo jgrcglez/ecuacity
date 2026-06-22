@@ -17,6 +17,7 @@ export default function SignUp() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -33,7 +34,7 @@ export default function SignUp() {
 
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) return;
+    if (!name.trim() || !email.trim() || !agreedToTerms) return;
     setError("");
     setLoading(true);
 
@@ -265,9 +266,19 @@ export default function SignUp() {
                   className="h-10 border-border focus-visible:border-flag-blue focus-visible:ring-2 focus-visible:ring-flag-blue/20"
                 />
               </div>
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input type="checkbox" checked={agreedToTerms} onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  className="mt-0.5 size-4 accent-flag-blue shrink-0" />
+                <span className="text-xs text-muted-foreground leading-relaxed">
+                  Acepto los{" "}
+                  <Link href="/terminos" className="font-semibold text-flag-blue hover:underline">términos de uso</Link>
+                  {" "}y la{" "}
+                  <Link href="/privacidad" className="font-semibold text-flag-blue hover:underline">política de privacidad</Link>.
+                </span>
+              </label>
             </CardContent>
             <CardFooter className="flex flex-col gap-3 pt-0">
-              <Button type="submit" disabled={loading || !name.trim() || !email.trim()}
+              <Button type="submit" disabled={loading || !name.trim() || !email.trim() || !agreedToTerms}
                 className="w-full h-10 bg-flag-yellow text-flag-blue hover:bg-flag-blue hover:text-white font-bold text-sm">
                 {loading ? (<><Loader2 className="size-4 mr-2 animate-spin" />Enviando código...</>) : (<><Mail className="size-4 mr-2" />Enviar código</>)}
               </Button>
