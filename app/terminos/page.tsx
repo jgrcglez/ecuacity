@@ -27,7 +27,7 @@ export default function TerminosPage() {
           <h2 className="text-lg font-semibold text-foreground mt-6">Contacto</h2>
           <p>
             Para consultas sobre estos términos, escríbenos a{" "}
-            <a href="/contacto" className="text-flag-blue underline">/contacto</a>.
+            <a href="/contacto" className="text-flag-blue underline">Contacto</a>.
           </p>
         </div>
       </div>
