@@ -8,7 +8,7 @@ export default function Hero() {
       {/* Background image — Quito */}
       <Image
         src="/landing/quito.jpg"
-        alt=""
+        alt="Vista panorámica de Quito, Patrimonio Cultural de la Humanidad"
         fill
         priority
         sizes="100vw"

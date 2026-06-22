@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Términos de uso",
+  description: "Términos y condiciones de uso de Ecuacity, el simulador de examen de ciudadanía ecuatoriana.",
+};
+
 export default function TerminosPage() {
   return (
     <main className="min-h-screen bg-muted/50 py-20">
