@@ -178,7 +178,8 @@ export default function PreguntasPage() {
   }, [searchQuery]);
 
   useEffect(() => {
-    fetchQuestions();
+    const id = setTimeout(() => fetchQuestions(), 0);
+    return () => clearTimeout(id);
   }, [page, fetchQuestions]);
 
   // ── CRUD handlers ──
@@ -396,7 +397,7 @@ export default function PreguntasPage() {
                   </TableRow>
                 ) : (
                   questions.map((q, idx) => (
-                    <TableRow key={q.id}>
+                    <TableRow key={q.id} className="cursor-pointer" onClick={() => openEdit(q)}>
                       <TableCell className="pl-5 text-xs text-muted-foreground font-mono">
                         {(page - 1) * ITEMS_PER_PAGE + idx + 1}
                       </TableCell>
