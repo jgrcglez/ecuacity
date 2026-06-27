@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Play, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { extractYoutubeId, youtubeThumbnail, youtubeEmbedUrl } from "@/lib/youtube";
@@ -32,10 +33,10 @@ export default function VideoShowcase() {
   const scrollTo = (index: number) => {
     const el = scrollRef.current;
     if (!el) return;
-    const cards = el.children;
-    if (cards[index]) {
-      cards[index].scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-    }
+    const card = el.children[index] as HTMLElement | undefined;
+    if (!card) return;
+    const target = card.offsetLeft - (el.offsetWidth - card.offsetWidth) / 2;
+    el.scrollTo({ left: target, behavior: "smooth" });
   };
 
   const goNext = useCallback(() => {
@@ -171,11 +172,12 @@ export default function VideoShowcase() {
                       type="button"
                     >
                       {thumb ? (
-                        <img
+                        <Image
                           src={thumb}
                           alt={v.title}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          loading="lazy"
+                          fill
+                          unoptimized
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
                         <div className="w-full h-full bg-white/5 flex items-center justify-center">
