@@ -63,8 +63,8 @@ export default function Home() {
         <TrustBar />
         <Features />
         <HowItWorks />
-        <Testimonials />
         <VideoShowcase />
+        <Testimonials />
         <Pricing />
         <Faq />
         <FooterCta />
