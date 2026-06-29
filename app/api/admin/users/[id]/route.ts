@@ -67,6 +67,13 @@ export async function PATCH(
 
       case "togglePlan": {
         const plan = body.plan === "premium" ? "premium" : "free";
+
+        // Admin promotions are permanent — set a far-future expiry so
+        // the isPremium check at /api/user/me (plan + expiresAt > now)
+        // works correctly. When demoting, clear expiresAt.
+        const expiresAt =
+          plan === "premium" ? new Date(Date.now() + 365_000 * 24 * 60 * 60 * 1000) : null;
+
         const [existing] = await db
           .select({ id: subscription.id })
           .from(subscription)
@@ -76,13 +83,14 @@ export async function PATCH(
         if (existing) {
           await db
             .update(subscription)
-            .set({ plan, status: "active" })
+            .set({ plan, status: "active", expiresAt })
             .where(eq(subscription.userId, id));
         } else {
           await db.insert(subscription).values({
             userId: id,
             plan,
             status: "active",
+            expiresAt,
           });
         }
         return NextResponse.json({ success: true, plan });
