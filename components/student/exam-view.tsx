@@ -17,7 +17,6 @@ interface QuestionData {
   categoryName: string;
   imageUrl: string | null;
   options: Option[];
-  progress: { selectedOptionId: string; isCorrect: boolean } | null;
 }
 
 interface ExamViewProps {

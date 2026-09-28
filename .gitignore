@@ -69,3 +69,4 @@ next-env.d.ts
 !/lib/db/seed/export-questions.ts
 !/lib/db/seed/parse-gemini-export.ts
 /.idea/db-forest-config.xml
+/.idea/conventionalCommit.xml

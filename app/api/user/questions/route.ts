@@ -9,7 +9,7 @@ import {
   userProgress,
 } from "@/lib/db/schema/questions-schema";
 import { subscription } from "@/lib/db/schema/subscription-schema";
-import { eq, sql, and, inArray } from "drizzle-orm";
+import { eq, sql, and, inArray, notInArray } from "drizzle-orm";
 
 const PER_PAGE = 10;
 const ASSIGNMENT_COUNT = 10;
@@ -24,8 +24,11 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 // ─── GET — user's questions ──────────────────────────────
-// Free: 10 assigned questions. Premium: full bank, optional
-// categoryId + page for pagination.
+// Free:    10 assigned questions, re-servable at any time.
+// Premium: the full bank, paginated. Only questions not yet answered
+//          in the requested scope, so finishing a scope never dead-ends
+//          the client on an empty exam. ?mode=review re-serves answered
+//          questions for a deliberate re-practice.
 export async function GET(request: NextRequest) {
   const session = await auth.api.getSession({ headers: request.headers });
   if (!session?.user) {
@@ -36,6 +39,7 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const categoryId = url.searchParams.get("categoryId");
   const page = Math.max(1, Number(url.searchParams.get("page") ?? "1"));
+  const reviewMode = url.searchParams.get("mode") === "review";
 
   // Check subscription plan
   const [sub] = await db
@@ -46,12 +50,8 @@ export async function GET(request: NextRequest) {
 
   const isPremium = sub?.plan === "premium";
 
-  let questionIds: string[];
-  let total = 0;
-  let totalPages = 1;
-
   if (!isPremium) {
-    // ── FREE: assigned questions (existing flow) ──
+    // ── FREE: assigned questions ──
     const existing = await db
       .select({
         questionId: userQuestionAssignment.questionId,
@@ -61,7 +61,9 @@ export async function GET(request: NextRequest) {
       .where(eq(userQuestionAssignment.userId, userId))
       .orderBy(userQuestionAssignment.sortOrder);
 
-    if (existing.length === 0) {
+    let questionIds = existing.map((a) => a.questionId);
+
+    if (questionIds.length === 0) {
       const random = await db
         .select({ id: question.id })
         .from(question)
@@ -78,41 +80,61 @@ export async function GET(request: NextRequest) {
       );
 
       questionIds = random.map((q) => q.id);
-    } else {
-      questionIds = existing.map((a) => a.questionId);
     }
 
-    total = questionIds.length;
-    totalPages = 1;
-
-    return assembleResponse(userId, questionIds, total, totalPages, null);
+    // No `remaining` — free users can always redo their assigned set.
+    return assembleResponse(questionIds, { total: questionIds.length });
   }
 
   // ── PREMIUM: full bank, paginated ──
-  const whereClause = categoryId
+  const scope = categoryId
     ? and(eq(question.status, "active"), eq(question.categoryId, categoryId))
     : eq(question.status, "active");
 
-  const [countRow] = await db
+  const answered = db
+    .select({ questionId: userProgress.questionId })
+    .from(userProgress)
+    .where(eq(userProgress.userId, userId));
+
+  const selectable = reviewMode
+    ? scope
+    : and(scope, notInArray(question.id, answered));
+
+  const [selectableRow] = await db
     .select({ count: sql<number>`cast(count(*) as int)` })
     .from(question)
-    .where(whereClause);
+    .where(selectable);
 
-  total = countRow?.count ?? 0;
-  totalPages = Math.ceil(total / PER_PAGE) || 1;
+  const selectableCount = selectableRow?.count ?? 0;
+
+  // In practice mode `total` is the whole scope so the client can tell
+  // "scope is empty" apart from "scope is fully answered".
+  let total = selectableCount;
+  if (!reviewMode) {
+    const [scopeRow] = await db
+      .select({ count: sql<number>`cast(count(*) as int)` })
+      .from(question)
+      .where(scope);
+    total = scopeRow?.count ?? 0;
+  }
+
+  const totalPages = Math.ceil(selectableCount / PER_PAGE) || 1;
   const safePage = Math.min(page, totalPages);
 
-  const rows = await db
-    .select({ id: question.id })
-    .from(question)
-    .where(whereClause)
-    .orderBy(sql`random()`)
-    .limit(PER_PAGE)
-    .offset((safePage - 1) * PER_PAGE);
+  const rows =
+    selectableCount === 0
+      ? []
+      : await db
+          .select({ id: question.id })
+          .from(question)
+          .where(selectable)
+          .orderBy(sql`random()`)
+          .limit(PER_PAGE)
+          .offset((safePage - 1) * PER_PAGE);
 
-  questionIds = rows.map((q) => q.id);
-
-  return assembleResponse(userId, questionIds, total, totalPages, {
+  return assembleResponse(rows.map((q) => q.id), {
+    total,
+    ...(reviewMode ? {} : { remaining: selectableCount }),
     page: safePage,
     totalPages,
   });
@@ -120,12 +142,18 @@ export async function GET(request: NextRequest) {
 
 // ─── Shared assembly ──────────────────────────────────────
 async function assembleResponse(
-  userId: string,
   questionIds: string[],
-  total: number,
-  totalPages: number,
-  pagination: { page: number; totalPages: number } | null,
+  meta: {
+    total: number;
+    remaining?: number;
+    page?: number;
+    totalPages?: number;
+  },
 ) {
+  if (questionIds.length === 0) {
+    return NextResponse.json({ questions: [], ...meta });
+  }
+
   // Questions with category
   const questionRows = await db
     .select({
@@ -150,26 +178,6 @@ async function assembleResponse(
     .from(answerOption)
     .where(inArray(answerOption.questionId, questionIds))
     .orderBy(answerOption.order);
-
-  // Progress
-  const progressRows = await db
-    .select({
-      questionId: userProgress.questionId,
-      selectedOptionId: userProgress.selectedOptionId,
-      isCorrect: userProgress.isCorrect,
-    })
-    .from(userProgress)
-    .where(
-      and(
-        eq(userProgress.userId, userId),
-        inArray(userProgress.questionId, questionIds),
-      ),
-    );
-
-  const progressMap: Record<string, { selectedOptionId: string; isCorrect: boolean }> = {};
-  for (const p of progressRows) {
-    progressMap[p.questionId] = { selectedOptionId: p.selectedOptionId, isCorrect: p.isCorrect };
-  }
 
   const optionsByQuestion: Record<string, typeof optionRows> = {};
   for (const opt of optionRows) {
@@ -199,16 +207,8 @@ async function assembleResponse(
           text: o.text,
           order: i,
         })),
-        progress: progressMap[q!.id] ?? null,
       };
     });
 
-  const response: Record<string, unknown> = { questions, total };
-
-  if (pagination) {
-    response.page = pagination.page;
-    response.totalPages = pagination.totalPages;
-  }
-
-  return NextResponse.json(response);
+  return NextResponse.json({ questions, ...meta });
 }
